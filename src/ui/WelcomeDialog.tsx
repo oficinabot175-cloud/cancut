@@ -25,7 +25,7 @@ function demoProject(w: number, h: number) {
   const b2 = bg(4, '#ff7a18', '#af002d', 90); b2.transitionIn = { type: 'circle', duration: 0.8 };
   const b3 = bg(8, '#11998e', '#38ef7d', 30); b3.transitionIn = { type: 'swirl', duration: 1 };
   const t1 = createClip({ type: 'text', trackId: v2, start: 0.3, duration: 3.4, name: 'Título' });
-  t1.text = { ...defaultText('NOVACUT STUDIO'), font: 'Montserrat', weight: 900, size: Math.round(h * 0.11), letterSpacing: 4 };
+  t1.text = { ...defaultText('CANCUT'), font: 'Montserrat', weight: 900, size: Math.round(h * 0.11), letterSpacing: 4 };
   t1.animation = { ...t1.animation, in: 'zoomIn', inDuration: 0.6, out: 'fade', outDuration: 0.4 };
   const t2 = createClip({ type: 'text', trackId: v2, start: 4.3, duration: 3.4, name: 'Subtítulo' });
   t2.text = { ...defaultText('Edita como un profesional'), font: 'Poppins', weight: 700, size: Math.round(h * 0.07), boxWidth: Math.round(w * 0.8) };
