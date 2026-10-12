@@ -1,6 +1,6 @@
 import type { Clip, TrackBox, TrackingData, TrackingSample } from '../types';
 import { sampleFrames, timesRange, toGray } from './frames';
-import { detectFaces, detectObjects, loadFaceDetector } from './vision';
+import { detectFaces, detectObjects, loadFaceDetector, detectHeads, detectFacesTiled, loadPoseLandmarker } from './vision';
 import { uid } from '../core/utils';
 import { getState } from '../store/editor';
 import { decodeAssetAudio } from '../engine/audioMix';
@@ -99,6 +99,124 @@ export async function trackFaces(clip: Clip, onProgress: Progress, signal?: Abor
     if (!samples[k].boxes.length && samples[k - 1].boxes.length && samples[k + 1].boxes.length) samples[k].boxes = samples[k - 1].boxes;
   }
   return { id: uid('trk'), name: `Rostros · ${clip.name}`, kind: 'faces', assetId: clip.assetId!, samples, createdAt: Date.now() };
+}
+
+export interface FaceTrackOpts {
+  /** también cabezas de perfil / de espaldas (esqueleto) */
+  heads: boolean;
+  /** segundos que se cubren antes de la primera y después de la última detección */
+  pad: number;
+  /** fotogramas analizados por segundo */
+  fps: number;
+}
+
+const iou = (a: TrackBox, b: TrackBox) => {
+  const x1 = Math.max(a.x - a.w / 2, b.x - b.w / 2), x2 = Math.min(a.x + a.w / 2, b.x + b.w / 2);
+  const y1 = Math.max(a.y - a.h / 2, b.y - b.h / 2), y2 = Math.min(a.y + a.h / 2, b.y + b.h / 2);
+  const inter = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+  return inter / Math.max(1e-6, a.w * a.h + b.w * b.h - inter);
+};
+const centerDist = (a: TrackBox, b: TrackBox) => Math.hypot(a.x - b.x, a.y - b.y) / Math.max(1e-3, (a.w + a.h + b.w + b.h) / 4);
+
+/** Fusiona detecciones que se solapan (rostro + cabeza de la misma persona). */
+function mergeBoxes(boxes: TrackBox[]): TrackBox[] {
+  const out: TrackBox[] = [];
+  const sorted = [...boxes].sort((a, b) => b.w * b.h - a.w * a.h);
+  for (const b of sorted) {
+    const m = out.find((o) => iou(o, b) > 0.15 || centerDist(o, b) < 0.6);
+    if (!m) { out.push({ ...b }); continue; }
+    // unión de ambas cajas
+    const x1 = Math.min(m.x - m.w / 2, b.x - b.w / 2), x2 = Math.max(m.x + m.w / 2, b.x + b.w / 2);
+    const y1 = Math.min(m.y - m.h / 2, b.y - b.h / 2), y2 = Math.max(m.y + m.h / 2, b.y + b.h / 2);
+    m.x = (x1 + x2) / 2; m.y = (y1 + y2) / 2; m.w = x2 - x1; m.h = y2 - y1;
+  }
+  return out;
+}
+
+/**
+ * Seguimiento robusto de rostros/cabezas para difuminar:
+ * rostros (también en mosaico para caras pequeñas) + cabezas desde el esqueleto (perfil, costado, espaldas),
+ * asociación en pistas, interpolación de huecos, suavizado y margen antes/después de cada aparición.
+ */
+export async function trackHeads(clip: Clip, onProgress: Progress, signal?: AbortSignal, o: FaceTrackOpts = { heads: true, pad: 1, fps: 10 }): Promise<TrackingData> {
+  await loadFaceDetector();
+  let poseOk = o.heads;
+  if (poseOk) { try { await loadPoseLandmarker(); } catch { poseOk = false; } }
+  const { s, e } = clipSourceRange(clip);
+  const times = timesRange(s, e, o.fps);
+  const frames: { t: number; boxes: TrackBox[] }[] = [];
+  let i = 0;
+  for await (const f of sampleFrames(clip.assetId!, times, 1280, signal)) {
+    let boxes: TrackBox[] = [];
+    try { boxes.push(...await detectFacesTiled(f.canvas as any, f.w, f.h)); } catch { /* noop */ }
+    if (poseOk) { try { boxes.push(...await detectHeads(f.canvas as any, f.w, f.h)); } catch { /* noop */ } }
+    if (!boxes.length) {
+      // último recurso: personas detectadas → zona superior (cabeza)
+      try {
+        const people = await detectObjects(f.canvas as any, f.w, f.h, 'person');
+        for (const p of people) { const hw = p.w * 0.42; boxes.push({ x: p.x, y: p.y - p.h / 2 + p.h * 0.11, w: hw, h: Math.min(p.h * 0.24, hw * (f.w / f.h) * 1.25) }); }
+      } catch { /* noop */ }
+    }
+    boxes = mergeBoxes(boxes.filter((b) => b.w > 0.005 && b.h > 0.005));
+    frames.push({ t: f.t, boxes });
+    onProgress(++i / times.length, `Buscando rostros y cabezas (también de perfil)… ${Math.round((i / times.length) * 100)}%`);
+  }
+  const samples = buildFaceTracks(frames, o);
+  return { id: uid('trk'), name: `Rostros · ${clip.name}`, kind: 'faces', assetId: clip.assetId!, samples, createdAt: Date.now() };
+}
+
+/** Post-proceso puro: asociar detecciones en pistas, interpolar, margen y suavizado. */
+export function buildFaceTracks(frames: { t: number; boxes: TrackBox[] }[], o: { pad: number; fps: number }): TrackingSample[] {
+  type Pt = { t: number; b: TrackBox };
+  const tracks: { pts: Pt[]; last: number }[] = [];
+  const maxGap = 2.0;
+  for (const fr of frames) {
+    const used = new Set<number>();
+    for (const b of fr.boxes) {
+      let best = -1, bestD = 1e9;
+      tracks.forEach((tr, k) => {
+        if (used.has(k) || fr.t - tr.last > maxGap) return;
+        const lb = tr.pts[tr.pts.length - 1].b;
+        const d = centerDist(lb, b) - iou(lb, b);
+        if (d < bestD && (centerDist(lb, b) < 1.6 + (fr.t - tr.last) * 2)) { bestD = d; best = k; }
+      });
+      if (best < 0) { tracks.push({ pts: [{ t: fr.t, b }], last: fr.t }); used.add(tracks.length - 1); }
+      else { tracks[best].pts.push({ t: fr.t, b }); tracks[best].last = fr.t; used.add(best); }
+    }
+  }
+  // descartar falsos positivos aislados (una sola detección muy pequeña)
+  const good = tracks.filter((tr) => tr.pts.length >= 2 || (tr.pts[0].b.w * tr.pts[0].b.h > 0.002));
+  // --- muestrear cada pista en todos los tiempos: interpolar huecos, margen antes/después, suavizar
+  const step = 1 / o.fps;
+  const allT = frames.map((f) => f.t);
+  const perTrack = good.map((tr, id) => {
+    const pts = tr.pts;
+    const t0 = pts[0].t - o.pad, t1 = pts[pts.length - 1].t + o.pad;
+    const at = (t: number): TrackBox | null => {
+      if (t < t0 - 1e-6 || t > t1 + 1e-6) return null;
+      if (t <= pts[0].t) return pts[0].b;
+      if (t >= pts[pts.length - 1].t) return pts[pts.length - 1].b;
+      let k = 0; while (k < pts.length - 2 && pts[k + 1].t < t) k++;
+      const a = pts[k], b = pts[k + 1];
+      const u = (t - a.t) / Math.max(1e-6, b.t - a.t);
+      return { x: a.b.x + (b.b.x - a.b.x) * u, y: a.b.y + (b.b.y - a.b.y) * u, w: a.b.w + (b.b.w - a.b.w) * u, h: a.b.h + (b.b.h - a.b.h) * u };
+    };
+    const raw = allT.map((t) => at(t));
+    // suavizado (media móvil) + tamaño conservador (máximo local)
+    const win = Math.max(1, Math.round(o.fps * 0.25));
+    const sm = raw.map((b, k) => {
+      if (!b) return null;
+      let sx = 0, sy = 0, n = 0, mw = 0, mh = 0;
+      for (let j = Math.max(0, k - win); j <= Math.min(raw.length - 1, k + win); j++) {
+        const q = raw[j]; if (!q) continue;
+        sx += q.x; sy += q.y; n++; mw = Math.max(mw, q.w); mh = Math.max(mh, q.h);
+      }
+      return { x: sx / n, y: sy / n, w: mw, h: mh, id };
+    });
+    return sm;
+  });
+  void step;
+  return allT.map((t, k) => ({ t, boxes: perTrack.map((tr) => tr[k]).filter(Boolean) as TrackBox[] }));
 }
 
 /** Auto-reencuadre: sigue al sujeto principal (rostro o persona) con un camino de cámara suave. */

@@ -26,9 +26,9 @@ export function ShortcutsDialog({ onClose }: { onClose: () => void }) {
 
 export function AboutDialog({ onClose }: { onClose: () => void }) {
   return (
-    <Modal title="Acerca de NovaCut Studio" onClose={onClose} size="sm" icon={<Info size={18} />}>
+    <Modal title="Acerca de CanCut" onClose={onClose} size="sm" icon={<Info size={18} />}>
       <p style={{ lineHeight: 1.6, marginTop: 0 }}>
-        <b>NovaCut Studio</b> es un editor de video profesional que funciona 100% en tu navegador. Tus archivos nunca salen de tu equipo: la decodificación, el render por GPU (WebGL2), la IA y la exportación (WebCodecs) se ejecutan localmente.
+        <b>CanCut</b> es un editor de video profesional que funciona 100% en tu navegador. Tus archivos nunca salen de tu equipo: la decodificación, el render por GPU (WebGL2), la IA y la exportación (WebCodecs) se ejecutan localmente.
       </p>
       <p className="hint">Tecnologías: React, TypeScript, WebGL2, WebCodecs, Mediabunny, MediaPipe Tasks, Transformers.js (Whisper), FFmpeg.wasm, Web Audio API. Motion graphics: plantillas y runtime de HyperFrames © HeyGen (Apache-2.0), GSAP y modern-screenshot.</p>
       <p className="hint">Inspirado en los mejores editores libres: Kdenlive, Shotcut (MLT), OpenShot, Olive, Blender VSE, LosslessCut y editores web como Omniclip y Diffusion Studio.</p>

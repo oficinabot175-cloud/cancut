@@ -18,6 +18,9 @@ function Card({ icon, title, desc, children }: { icon: React.ReactNode; title: s
 export function AIPanel() {
   const sel = useEditor((s) => s.project.clips.find((c) => s.selection.includes(c.id)));
   const [aspect, setAspect] = useState('9:16');
+  const [faceMode, setFaceMode] = useState<'blur' | 'pixelate' | 'solid'>('blur');
+  const [faceHeads, setFaceHeads] = useState(true);
+  const [facePad, setFacePad] = useState(1);
   const isVideo = sel?.type === 'video';
   return (
     <div>
@@ -36,8 +39,11 @@ export function AIPanel() {
       <Card icon={<Crosshair size={15} />} title="Seguimiento de objeto" desc="Dibuja un recuadro sobre cualquier objeto y el rastreador lo seguirá. Luego vincula textos, stickers, desenfoques o el enfoque al objeto.">
         <button className="btn sm primary" disabled={!isVideo} onClick={startObjectTracking}>Iniciar seguimiento</button>
       </Card>
-      <Card icon={<ScanFace size={15} />} title="Difuminar rostros" desc="Detecta todas las caras del clip y las difumina automáticamente siguiendo su movimiento (privacidad).">
-        <button className="btn sm primary" disabled={!isVideo} onClick={blurFaces}>Difuminar rostros</button>
+      <Card icon={<ScanFace size={15} />} title="Difuminar rostros" desc="Detecta caras de frente, de perfil, de costado e incluso de espaldas (cabezas por esqueleto), las sigue en el tiempo y las cubre desde antes de que aparezcan del todo.">
+        <Select value={faceMode} onChange={setFaceMode} options={[{ value: 'blur', label: 'Desenfocar' }, { value: 'pixelate', label: 'Pixelar' }, { value: 'solid', label: 'Tapar (color)' }]} style={{ flex: 1 }} />
+        <Select value={facePad} onChange={setFacePad} options={[{ value: 0, label: 'Sin margen' }, { value: 0.5, label: 'Margen 0,5 s' }, { value: 1, label: 'Margen 1 s' }, { value: 2, label: 'Margen 2 s' }]} style={{ flex: 1 }} />
+        <label className="row" style={{ gap: 6, fontSize: 12, width: '100%' }}><input type="checkbox" checked={faceHeads} onChange={(e) => setFaceHeads(e.target.checked)} />Incluir perfiles, costados y cabezas de espaldas</label>
+        <button className="btn sm primary" disabled={!isVideo} onClick={() => blurFaces({ heads: faceHeads, pad: facePad, mode: faceMode })}>Difuminar rostros</button>
       </Card>
       <Card icon={<Crop size={15} />} title="Auto-reencuadre (cámara inteligente)" desc="Convierte videos horizontales a vertical (o cualquier formato): una cámara virtual sigue al sujeto principal con movimiento suave.">
         <Select value={aspect} onChange={setAspect} options={ASPECT_PRESETS.slice(0, 8).map((a) => ({ value: a.id, label: a.label }))} style={{ flex: 1 }} />

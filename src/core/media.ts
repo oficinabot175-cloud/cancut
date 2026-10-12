@@ -13,7 +13,7 @@ const IMAGE_EXT = ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp', 'svg', 'avif', 'h
 
 export const ACCEPT_MEDIA = [
   'video/*', 'audio/*', 'image/*',
-  ...[...VIDEO_EXT, ...AUDIO_EXT, ...IMAGE_EXT, 'srt', 'vtt', 'cube', 'ttf', 'otf', 'woff', 'woff2', 'novacut', 'json'].map((e) => '.' + e),
+  ...[...VIDEO_EXT, ...AUDIO_EXT, ...IMAGE_EXT, 'srt', 'vtt', 'cube', 'ttf', 'otf', 'woff', 'woff2', 'novacut', 'cancut', 'json'].map((e) => '.' + e),
 ].join(',');
 
 export const ext = (name: string) => (name.split('.').pop() || '').toLowerCase();
@@ -25,7 +25,7 @@ export function classify(file: File): FileCategory {
   if (['srt', 'vtt'].includes(e)) return 'subtitle';
   if (e === 'cube') return 'lut';
   if (['ttf', 'otf', 'woff', 'woff2'].includes(e)) return 'font';
-  if (['novacut', 'json'].includes(e)) return 'project';
+  if (['novacut', 'cancut', 'json'].includes(e)) return 'project';
   if (file.type.startsWith('video/') || VIDEO_EXT.includes(e)) return 'video';
   if (file.type.startsWith('audio/') || AUDIO_EXT.includes(e)) return 'audio';
   if (file.type.startsWith('image/') || IMAGE_EXT.includes(e)) return 'image';

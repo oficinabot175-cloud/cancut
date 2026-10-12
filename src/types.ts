@@ -1,5 +1,5 @@
 // ============================================================================
-//  NovaCut Studio — Modelo de datos del proyecto
+//  CanCut — Modelo de datos del proyecto
 // ============================================================================
 
 export type MediaKind = 'video' | 'audio' | 'image';
@@ -258,10 +258,14 @@ export interface Clip {
   reframe?: ReframeBinding | null;
   stabilize?: StabilizeBinding | null;
   audioDetached?: boolean; // audio separado en otra pista
+  /** capa de ajuste limitada a una zona con forma (desenfocar/pixelar zona movible) */
+  region?: { shape: 'rect' | 'ellipse' | 'heart' | 'star'; radius: number; feather: number; invert: boolean } | null;
+  /** marco de presentación (bordes redondeados, borde y brillo) para plantillas de diseño */
+  frame?: { radius: number; border: number; color: string; glow: number; glowColor: string } | null;
   reversed?: boolean;
 }
 
-export interface TrackBox { x: number; y: number; w: number; h: number; score?: number } // normalizado 0..1 (x,y = centro)
+export interface TrackBox { x: number; y: number; w: number; h: number; score?: number; id?: number } // normalizado 0..1 (x,y = centro)
 export interface TrackingSample { t: number; boxes: TrackBox[] } // t = tiempo de la fuente
 export interface TrackingData {
   id: string;

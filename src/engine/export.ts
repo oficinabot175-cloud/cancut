@@ -320,7 +320,7 @@ export async function exportProject(project: Project, assets: Record<string, Med
         }
       }
     }
-    output.setMetadataTags({ title: project.name, comment: 'Creado con NovaCut Studio' } as any);
+    output.setMetadataTags({ title: project.name, comment: 'Creado con CanCut' } as any);
     await output.start();
     if (audioSource && audioBuf) await audioSource.add(audioBuf);
 

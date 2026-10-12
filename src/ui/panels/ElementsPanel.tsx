@@ -1,8 +1,11 @@
 import React from 'react';
-import { Layers, Smile, Square } from 'lucide-react';
+import { Layers, Smile, Square, Droplets } from 'lucide-react';
 import { getState } from '../../store/editor';
 import { EMOJI_STICKERS } from '../../core/presets';
 import { createClip, defaultText } from '../../core/defaults';
+import { defaultParams } from '../../core/presets';
+import { uid } from '../../core/utils';
+import type { EffectType } from '../../types';
 import type { ShapeKind } from '../../types';
 
 const SHAPES: { kind: ShapeKind; name: string; svg: React.ReactNode }[] = [
@@ -32,7 +35,36 @@ const BACKGROUNDS: { name: string; color: string; gradient?: [string, string, nu
   { name: 'Fuego', color: '#f12711', gradient: ['#f12711', '#f5af19', 90] },
 ];
 
+const ZONE_SHAPES: { shape: 'rect' | 'ellipse' | 'heart' | 'star'; radius: number; name: string; svg: React.ReactNode }[] = [
+  { shape: 'rect', radius: 0, name: 'Rectángulo', svg: <rect x="6" y="12" width="36" height="24" /> },
+  { shape: 'rect', radius: 0.35, name: 'Redondeado', svg: <rect x="6" y="12" width="36" height="24" rx="8" /> },
+  { shape: 'ellipse', radius: 0, name: 'Elipse', svg: <ellipse cx="24" cy="24" rx="18" ry="13" /> },
+  { shape: 'heart', radius: 0, name: 'Corazón', svg: <path d="M24 40S6 29 6 18a9 9 0 0 1 18-2 9 9 0 0 1 18 2c0 11-18 22-18 22z" /> },
+  { shape: 'star', radius: 0, name: 'Estrella', svg: <path d="m24 6 5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1z" /> },
+];
+const ZONE_FX: { id: string; name: string; effects: { type: EffectType; params?: Record<string, number | string | boolean> }[] }[] = [
+  { id: 'blur', name: 'Desenfocar', effects: [{ type: 'blur', params: { radius: 30 } }] },
+  { id: 'pixel', name: 'Pixelar', effects: [{ type: 'pixelate', params: { size: 28 } }] },
+  { id: 'glass', name: 'Cristal esmerilado', effects: [{ type: 'blur', params: { radius: 22 } }, { type: 'colorOverlay', params: { color: '#ffffff', amount: 0.18 } }] },
+  { id: 'dark', name: 'Oscurecer', effects: [{ type: 'blur', params: { radius: 12 } }, { type: 'colorOverlay', params: { color: '#000000', amount: 0.55 } }] },
+  { id: 'bw', name: 'Blanco y negro', effects: [] },
+];
+
+export function addBlurZone(shape: typeof ZONE_SHAPES[number], fxId = 'blur') {
+  const s = getState();
+  const fx = ZONE_FX.find((f) => f.id === fxId) || ZONE_FX[0];
+  const c = createClip({ type: 'adjustment', trackId: '', start: s.time, duration: 5, name: `Zona · ${fx.name}` });
+  c.region = { shape: shape.shape, radius: shape.radius, feather: 0.08, invert: false };
+  c.transform.scaleX = 0.32; c.transform.scaleY = shape.shape === 'rect' ? 0.22 : 0.32 * (s.project.width / s.project.height);
+  if (shape.shape === 'heart' || shape.shape === 'star' || shape.shape === 'ellipse') c.transform.scaleY = Math.min(0.6, 0.32 * (s.project.width / s.project.height) * (shape.shape === 'ellipse' ? 0.75 : 1));
+  c.effects = fx.effects.map((e) => ({ id: uid('fx'), type: e.type, enabled: true, params: { ...defaultParams(e.type), ...(e.params || {}) } }));
+  if (fxId === 'bw') c.grade.mono = 1;
+  const added = s.addClip(c, { newTrack: true });
+  s.set({ selection: [added.id], inspectorTab: 'basic' });
+}
+
 export function ElementsPanel() {
+  const [zoneFx, setZoneFx] = React.useState('blur');
   const st = getState;
   const addSticker = (emoji: string) => {
     const s = st();
@@ -64,6 +96,22 @@ export function ElementsPanel() {
         <h4><Layers size={15} />Capa de ajuste</h4>
         <p>Aplica color, filtros y efectos a todas las pistas que quedan debajo, como en Premiere y DaVinci.</p>
         <button className="btn sm primary" onClick={addAdjustment}>Añadir capa de ajuste</button>
+      </div>
+      <div className="ai-card">
+        <h4><Droplets size={15} />Zona de desenfoque (forma editable)</h4>
+        <p>Una forma que puedes mover, girar y redimensionar en el visor y que difumina (o pixela) todo lo que tiene debajo: matrículas, pantallas, rostros, datos…</p>
+        <div className="chips" style={{ marginBottom: 8 }}>
+          {ZONE_FX.map((f) => <button key={f.id} className={`chip ${zoneFx === f.id ? 'active' : ''}`} onClick={() => setZoneFx(f.id)}>{f.name}</button>)}
+        </div>
+        <div className="grid sm">
+          {ZONE_SHAPES.map((z) => (
+            <div key={z.name} className="tile" title={`${z.name} · ${ZONE_FX.find((f) => f.id === zoneFx)?.name}`} onClick={() => addBlurZone(z, zoneFx)}>
+              <div className="preview" style={{ aspectRatio: '1', background: 'repeating-linear-gradient(45deg,#1d2230 0 6px,#262c3b 6px 12px)' }}>
+                <svg viewBox="0 0 48 48" width="38" height="38" fill="rgba(255,255,255,.35)" stroke="#fff" strokeWidth="1.5" style={{ filter: 'blur(.3px)' }}>{z.svg}</svg>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       <div className="section">
         <div className="section-title"><Square size={12} />Formas</div>

@@ -419,4 +419,4 @@ export async function captureFrame(assetId: string, ts: number, maxW = 1920): Pr
 }
 
 export const engine = new PreviewEngine();
-(window as any).__novacut = { engine, getState };
+(window as any).__novacut = (window as any).__cancut = { engine, getState };

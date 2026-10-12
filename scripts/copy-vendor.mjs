@@ -22,6 +22,9 @@ const copies = [
   ['node_modules/topojson-client/dist/topojson-client.min.js', 'public/vendor/npm/topojson-client@3.1.0/dist/topojson-client.min.js'],
   ['node_modules/lottie-web/build/player/lottie_light.min.js', 'public/vendor/npm/lottie-web@5.12.2/build/player/lottie_light.min.js'],
   ['node_modules/clipper-lib/clipper.js', 'public/vendor/npm/clipper-lib@6.4.2/clipper.js'],
+  ['node_modules/world-atlas/countries-110m.json', 'public/vendor/npm/world-atlas@2/countries-110m.json'],
+  ['node_modules/us-atlas/states-10m.json', 'public/vendor/npm/us-atlas@3/states-10m.json'],
+  ['node_modules/es-atlas/es/autonomous_regions.json', 'public/vendor/npm/es-atlas@0.6.0/es/autonomous_regions.json'],
 ];
 let n = 0;
 for (const [from, to] of copies) {

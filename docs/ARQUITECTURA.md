@@ -1,6 +1,6 @@
-# Arquitectura de NovaCut Studio
+# Arquitectura de CanCut
 
-NovaCut es una aplicación estática (HTML + JS + WASM) que se ejecuta íntegramente en el navegador. No hay servidor: los medios del usuario se leen con la File API, se guardan en IndexedDB y nunca salen del equipo.
+CanCut es una aplicación estática (HTML + JS + WASM) que se ejecuta íntegramente en el navegador. No hay servidor: los medios del usuario se leen con la File API, se guardan en IndexedDB y nunca salen del equipo.
 
 ## Flujo de datos
 
@@ -69,6 +69,13 @@ Archivos ──► core/media (sondeo, miniaturas, forma de onda) ──► stor
 2. La composición se carga en un iframe `srcdoc` con: `<base>` a su carpeta, `window.__hfVariables` (variables personalizadas), parche `preserveDrawingBuffer` para WebGL, las librerías de CDN reescritas a `public/vendor/` y el runtime oficial de HyperFrames.
 3. Se espera a `__player.renderSeek` + `__renderReady`, y por cada fotograma: `renderSeek(t)` → `modern-screenshot.domToCanvas` (en el propio iframe) → `CanvasSource` de Mediabunny. Si el fotograma tiene transparencia se codifica WebM VP9 con `alpha: 'keep'`; si no, MP4 H.264 (o VP9/VP8).
 4. El video resultante se importa como medio (`asset.alpha`, `asset.motion`) y se inserta en una pista nueva arriba (overlay) o abajo (fondo). La reproducción y la exportación conservan el alfa (Chrome decodifica VP9 alfa en `<video>` y Mediabunny en WebCodecs).
+
+## Diseños, zonas y móvil
+
+- `src/core/layouts.ts`: cada plantilla define zonas normalizadas para cámara y pantalla; `placeInSlot` calcula escala (cubrir), recorte simétrico y posición, y `Clip.frame` (esquinas, borde, brillo) se dibuja en `processChain` (FS_FRAME, respetando el recorte) y como brillo exterior en `renderLayer` (FS_GLOWUNDER). Los fondos procedurales se generan en un canvas a la resolución del proyecto.
+- Zona de desenfoque: capa de ajuste con `Clip.region`; el resultado del ajuste se recorta con FS_OUTMASK usando la geometría del clip (se mueve con el gizmo).
+- Rostros: `trackHeads` combina rostros (completo + mosaico 2×2), cabezas desde Pose Landmarker y personas; `buildFaceTracks` asocia en pistas con id, interpola huecos, suaviza y añade margen antes/después. `sampleTracking` interpola por id.
+- Móvil: `useMobile()` cambia a una disposición tipo app (visor, timeline, barra inferior y hojas deslizables). `public/sw.js` + `manifest.webmanifest` la hacen instalable y con caché sin conexión.
 
 ## Persistencia
 

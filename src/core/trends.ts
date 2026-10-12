@@ -7,7 +7,7 @@ import { uid, deepClone, clamp } from './utils';
 import { engine, captureFrame } from '../engine/preview';
 import { getImage } from './media';
 import { loadFont } from './fonts';
-import { runTask, importFiles, loadSegmenterForUI } from './actions';
+import { runTask, importFiles, loadSegmenterForUI, stabilizeClip } from './actions';
 import { exportProject } from '../engine/export';
 
 const st = () => getState();
@@ -24,7 +24,7 @@ export interface TrendPreset {
   effects?: { type: EffectType; params?: Record<string, number | string | boolean> }[];
   filter?: string;
   transition?: TransitionType;
-  action?: 'textBehind' | 'putBehind' | 'enhance';
+  action?: 'textBehind' | 'putBehind' | 'enhance' | 'stabilize';
   hot?: boolean;
 }
 
@@ -68,6 +68,7 @@ export const TREND_PRESETS: TrendPreset[] = [
   { id: 'embers', name: 'Brasas', group: 'Partículas', icon: '🔥', colors: ['#f12711', '#f5af19'], desc: 'Chispas de fuego subiendo.', effects: [{ type: 'particles', params: { kind: 'embers', density: 1.2 } }] },
   // Belleza y calidad
   { id: 'enhance', name: 'Mejorar calidad (HD)', group: 'Belleza y calidad', icon: '💎', colors: ['#11998e', '#38ef7d'], desc: 'Reescalado inteligente, nitidez, menos ruido y color automático.', action: 'enhance', hot: true },
+  { id: 'stabilize', name: 'Estabilizar video', group: 'Belleza y calidad', icon: '🎯', colors: ['#4b6cb7', '#182848'], desc: 'Quita el temblor de la cámara (análisis de movimiento + recorte mínimo).', action: 'stabilize', hot: true },
   { id: 'smooth-skin', name: 'Retoque de piel', group: 'Belleza y calidad', icon: '💄', colors: ['#ee9ca7', '#ffdde1'], desc: 'Piel suave y luminosa sin perder detalle.', effects: [{ type: 'smoothSkin' }] },
   { id: 'glow-up', name: 'Glow up', group: 'Belleza y calidad', icon: '✨', colors: ['#ffecd2', '#fcb69f'], desc: 'Piel suave + filtro Glow Up + brillo de ensueño leve.', filter: 'tt-glowup', effects: [{ type: 'smoothSkin', params: { amount: 0.5 } }, { type: 'dreamGlow', params: { amount: 0.25 } }] },
   // Transiciones
@@ -100,6 +101,7 @@ export function applyTrend(t: TrendPreset) {
   if (t.action === 'textBehind') return textBehindSubject();
   if (t.action === 'putBehind') return putBehindSubject();
   if (t.action === 'enhance') return enhanceClips();
+  if (t.action === 'stabilize') return stabilizeClip(1);
   if (t.transition) {
     const ids = selectedClips().filter((c) => c.type !== 'audio').map((c) => c.id);
     if (!ids.length) { st().toast('Selecciona el clip donde empieza la transición', 'error'); return; }

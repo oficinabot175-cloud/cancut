@@ -52,12 +52,41 @@ function ProjectSettings() {
   );
 }
 
+function RegionControls({ clip }: { clip: Clip }) {
+  const r = clip.region!;
+  return (
+    <Collapsible title="Zona (forma)">
+      <Prop label="Forma"><Seg value={r.shape} onChange={(v: any) => edit(clip.id, (c) => { c.region!.shape = v; })} options={[{ value: 'rect', label: 'Rect.' }, { value: 'ellipse', label: 'Elipse' }, { value: 'heart', label: 'Corazón' }, { value: 'star', label: 'Estrella' }]} /></Prop>
+      {r.shape === 'rect' && <SliderProp label="Esquinas" value={r.radius} min={0} max={1} defaultValue={0.25} onChange={(v) => edit(clip.id, (c) => { c.region!.radius = v; })} />}
+      <SliderProp label="Suavizado" value={r.feather} min={0} max={1} defaultValue={0.08} onChange={(v) => edit(clip.id, (c) => { c.region!.feather = v; })} />
+      <Prop label="Invertir (fuera)"><Toggle value={r.invert} onChange={(v) => edit(clip.id, (c) => { c.region!.invert = v; })} /></Prop>
+      <p className="hint">Mueve y cambia el tamaño de la zona con el gizmo del visor. El efecto (desenfoque, pixelado…) se ajusta en la pestaña Efectos.</p>
+    </Collapsible>
+  );
+}
+
+function FrameControls({ clip }: { clip: Clip }) {
+  const f = clip.frame || { radius: 0, border: 0, color: '#ffffff', glow: 0, glowColor: '#7c5cff' };
+  const set = (fn: (x: NonNullable<Clip['frame']>) => void) => edit(clip.id, (c) => { const x = { ...(c.frame || f) }; fn(x); c.frame = x; });
+  return (
+    <Collapsible title="Marco y bordes" defaultOpen={!!clip.frame}>
+      <SliderProp label="Esquinas" value={f.radius} min={0} max={300} defaultValue={0} onChange={(v) => set((x) => { x.radius = v; })} />
+      <SliderProp label="Borde" value={f.border} min={0} max={40} defaultValue={0} onChange={(v) => set((x) => { x.border = v; })} />
+      <Prop label="Color del borde"><ColorField value={f.color} onChange={(v) => set((x) => { x.color = v; })} /></Prop>
+      <SliderProp label="Brillo / sombra" value={f.glow} min={0} max={2} defaultValue={0} onChange={(v) => set((x) => { x.glow = v; })} />
+      <Prop label="Color del brillo"><ColorField value={f.glowColor} onChange={(v) => set((x) => { x.glowColor = v; })} /></Prop>
+      {clip.frame && <button className="btn sm" onClick={() => edit(clip.id, (c) => { c.frame = null; })}>Quitar marco</button>}
+    </Collapsible>
+  );
+}
+
 function BasicTab({ clip }: { clip: Clip }) {
   const asset = useEditor((s) => (clip.assetId ? s.assets[clip.assetId] : undefined));
   const visual = clip.type !== 'audio';
   return (
     <div>
-      {visual && clip.type !== 'adjustment' && (
+      {clip.region && <RegionControls clip={clip} />}
+      {visual && (clip.type !== 'adjustment' || clip.region) && (
         <Collapsible title="Transformar" right={<button className="icon-btn sm" title="Restablecer" onClick={() => edit(clip.id, (c) => { c.transform = defaultTransform(); c.keyframes = Object.fromEntries(Object.entries(c.keyframes).filter(([k]) => k === 'volume')); })}><RotateCcw size={12} /></button>}>
           <AnimProp clip={clip} k="x" />
           <AnimProp clip={clip} k="y" />
@@ -86,6 +115,7 @@ function BasicTab({ clip }: { clip: Clip }) {
           </Prop>
         </Collapsible>
       )}
+      {(clip.type === 'video' || clip.type === 'image' || clip.type === 'solid') && <FrameControls clip={clip} />}
       {visual && (
         <Collapsible title="Composición">
           <AnimProp clip={clip} k="opacity" defaultValue={1} />
@@ -240,7 +270,7 @@ function TrackingTab({ clip }: { clip: Clip }) {
           <div className="section-title"><Sparkles size={12} />Herramientas de IA para este clip</div>
           <div className="stack" style={{ marginBottom: 12 }}>
             <button className="btn sm" onClick={startObjectTracking}><Crosshair size={13} />Rastrear un objeto</button>
-            <button className="btn sm" onClick={blurFaces}>Difuminar rostros</button>
+            <button className="btn sm" onClick={() => blurFaces()}>Difuminar rostros</button>
             <button className="btn sm" onClick={() => removeBackground('remove')}>Quitar fondo</button>
             <button className="btn sm" onClick={() => reframeClip()}>Auto-reencuadre (seguir sujeto)</button>
             <button className="btn sm" onClick={() => stabilizeClip()}>Estabilizar</button>
@@ -308,7 +338,7 @@ function tabsFor(c: Clip): string[] {
     case 'text': return ['text', 'basic', 'animation', 'effects', 'ai'];
     case 'shape': return ['shape', 'basic', 'animation', 'effects', 'mask', 'ai'];
     case 'solid': return ['basic', 'color', 'effects', 'animation', 'mask'];
-    case 'adjustment': return ['color', 'effects', 'basic'];
+    case 'adjustment': return c.region ? ['basic', 'effects', 'color', 'animation'] : ['color', 'effects', 'basic'];
     case 'audio': return ['audio', 'basic'];
   }
 }

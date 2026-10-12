@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title NovaCut Studio - Subir a GitHub
+title CanCut - Subir a GitHub
 cd /d "%~dp0"
 setlocal
 
@@ -15,12 +15,12 @@ if errorlevel 1 (
 
 echo.
 echo  ================================================
-echo     NovaCut Studio  -  Subir el proyecto a GitHub
+echo     CanCut  -  Subir el proyecto a GitHub
 echo  ================================================
 echo.
 echo  1. Crea un repositorio VACIO en https://github.com/new
-echo     (por ejemplo: novacut-studio, sin README ni licencia)
-echo  2. Copia su URL. Ejemplo: https://github.com/TU_USUARIO/novacut-studio.git
+echo     (por ejemplo: cancut, sin README ni licencia)
+echo  2. Copia su URL. Ejemplo: https://github.com/TU_USUARIO/cancut.git
 echo.
 set "REPO="
 set /p "REPO=Pega aqui la URL del repositorio y presiona Enter: "
@@ -46,7 +46,7 @@ if errorlevel 1 (
 )
 
 git add -A
-git commit -m "NovaCut Studio: editor de video profesional en el navegador"
+git commit -m "CanCut: editor de video profesional en el navegador"
 git branch -M main
 git remote remove origin >nul 2>nul
 git remote add origin "%REPO%"

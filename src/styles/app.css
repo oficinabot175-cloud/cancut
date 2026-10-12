@@ -440,3 +440,83 @@ kbd { font-family: var(--mono); font-size: 11px; background: var(--bg3); border:
 
 /* durante renders largos: evitar desenfoques de composición costosos */
 .nc-busy .modal-back { backdrop-filter: none; animation: none; }
+
+.motion-palette { display: flex; flex-wrap: wrap; gap: 6px; }
+.motion-swatch { position: relative; width: 30px; height: 30px; border-radius: 8px; overflow: hidden; border: 1px solid var(--line2); cursor: pointer; }
+.motion-swatch input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.motion-swatch span { display: block; width: 100%; height: 100%; }
+.motion-images { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 6px; }
+.motion-img { aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--line2); padding: 0; background: #111; cursor: pointer; }
+.motion-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.motion-img:hover { border-color: var(--accent); }
+
+/* =====================================================================
+   Interfaz móvil (tipo app)
+   ===================================================================== */
+.app.mobile { grid-template-rows: auto minmax(0, 46vh) minmax(0, 1fr) auto; height: 100dvh; height: 100svh; padding-bottom: env(safe-area-inset-bottom); }
+.app.mobile .topbar { height: 48px; gap: 6px; padding: 0 8px; padding-top: env(safe-area-inset-top); }
+.app.mobile .topbar .menu, .app.mobile .topbar .save-state, .app.mobile .topbar .brand small, .app.mobile .topbar > .icon-btn[title^="Atajos"] { display: none; }
+.app.mobile .topbar .sel { max-width: 92px; font-size: 12px; }
+.app.mobile .topbar .project-name { min-width: 0; width: 100%; font-size: 13px; }
+.app.mobile .topbar .btn.primary { padding: 0 10px; }
+.app.mobile .m-viewer { min-height: 0; display: flex; border-bottom: 1px solid var(--line); }
+.app.mobile .m-viewer > * { flex: 1; min-width: 0; }
+.app.mobile .viewer-bar { height: 38px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.app.mobile .viewer-bar::-webkit-scrollbar { display: none; }
+.app.mobile .transport { height: 44px; gap: 4px; padding: 0 6px; }
+.app.mobile .m-timeline { min-height: 0; display: flex; }
+.app.mobile .m-timeline > * { flex: 1; min-width: 0; }
+.app.mobile .tl-toolbar { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.app.mobile .tl-toolbar::-webkit-scrollbar { display: none; }
+.app.mobile .tl-body { grid-template-columns: 92px 1fr; }
+.app.mobile .tl-head .nm { font-size: 10.5px; }
+.app.mobile .tl-head .icon-btn { width: 22px; height: 22px; }
+.m-nav { display: flex; gap: 2px; overflow-x: auto; background: var(--bg1); border-top: 1px solid var(--line); padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); scrollbar-width: none; -webkit-overflow-scrolling: touch; z-index: 30; }
+.m-nav::-webkit-scrollbar { display: none; }
+.m-nav button { flex: none; min-width: 62px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border: 0; border-radius: 10px; background: none; color: var(--text3); font-size: 10px; cursor: pointer; }
+.m-nav button.active { background: var(--accent-soft); color: #fff; }
+.m-nav .m-nav-edit { color: var(--text); background: var(--bg3); position: sticky; left: 0; z-index: 1; }
+.m-sheet-back { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; }
+.m-sheet { position: fixed; left: 0; right: 0; bottom: 0; height: 72dvh; background: var(--bg1); border-top-left-radius: 18px; border-top-right-radius: 18px; box-shadow: 0 -12px 40px rgba(0,0,0,.5); z-index: 41; transform: translateY(105%); transition: transform .22s ease; display: flex; flex-direction: column; overflow: hidden; padding-bottom: env(safe-area-inset-bottom); }
+.m-sheet.open { transform: none; }
+.m-sheet-grip { height: 18px; flex: none; position: relative; cursor: pointer; }
+.m-sheet-grip::after { content: ''; position: absolute; left: 50%; top: 7px; width: 42px; height: 4px; border-radius: 2px; background: var(--line2); transform: translateX(-50%); }
+.m-sheet .panel { flex: 1; min-height: 0; border: 0; }
+.m-sheet .panel-body { -webkit-overflow-scrolling: touch; }
+.m-inspector { flex: 1; min-height: 0; display: flex; position: relative; }
+.m-inspector > .panel { flex: 1; }
+.sheet-close { margin-left: auto; font-size: 14px; }
+.sheet-close.floating { position: absolute; right: 8px; top: 6px; z-index: 2; }
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1024px) {
+  .modal, .modal.lg, .modal.sm { width: 100vw !important; max-width: 100vw; height: 100dvh; max-height: 100dvh; border-radius: 0; }
+  .modal-body { overflow-y: auto; }
+  .modal-body > div[style*="grid-template-columns"] { grid-template-columns: 1fr !important; }
+  .kv { grid-template-columns: 110px 1fr; }
+  .motion-dialog { grid-template-columns: 1fr; }
+  .motion-side { max-height: none; }
+  .welcome-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+  input, select, textarea { font-size: 16px; }
+  .text-input, .sel, .num, .search { font-size: 16px; }
+  .toasts { left: 8px; right: 8px; bottom: 120px; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
+  .icon-btn { min-width: 32px; min-height: 32px; }
+}
+.viewer-stage { touch-action: none; }
+.tl-scroll { -webkit-overflow-scrolling: touch; }
+.brand .logo-img { width: 26px; height: 26px; border-radius: 7px; box-shadow: 0 0 18px rgba(124,92,255,.45); }
+.install-btn { white-space: nowrap; }
+.app.mobile .install-btn { padding: 0 8px; font-size: 11px; }
+.app.mobile { width: 100vw; max-width: 100vw; overflow: hidden; grid-template-columns: minmax(0, 1fr); }
+.app.mobile > * { min-width: 0; }
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1024px) {
+  html, body { overflow: hidden; overscroll-behavior: none; width: 100%; }
+  .modal-back { padding: 0; }
+}
+
+.m-sheet-grip { height: 30px; }
+.m-sheet-x { position: absolute; right: 8px; top: 2px; width: 28px; height: 28px; font-size: 13px; }
+.app.mobile .topbar .project-name, .app.mobile .topbar .row .icon-btn[title^="Rehacer"] { display: none; }
+.app.mobile .topbar .sel { max-width: 74px; font-size: 13px; padding-right: 18px; }
+.app.mobile .topbar .btn.primary { font-size: 12px; gap: 4px; }
+.app.mobile .viewer-bar .sel { font-size: 13px; }
+.app.mobile .viewer-bar { gap: 4px; padding: 0 6px; }

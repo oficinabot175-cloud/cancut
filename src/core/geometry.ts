@@ -90,6 +90,17 @@ export function sampleTracking(td: TrackingData | undefined, ts: number): TrackB
   while (hi - lo > 1) { const m = (lo + hi) >> 1; if (s[m].t <= ts) lo = m; else hi = m; }
   const a = s[lo], b = s[hi];
   const k = (ts - a.t) / Math.max(b.t - a.t, 1e-6);
+  if (a.boxes.some((x) => x.id !== undefined)) {
+    // pistas con id: interpolar cada pista por separado; las que solo existen en un extremo se mantienen
+    const out: TrackBox[] = [];
+    const ids = new Set([...a.boxes, ...b.boxes].map((x) => x.id));
+    for (const id of ids) {
+      const A = a.boxes.find((x) => x.id === id), B = b.boxes.find((x) => x.id === id);
+      if (A && B) out.push({ x: A.x + (B.x - A.x) * k, y: A.y + (B.y - A.y) * k, w: A.w + (B.w - A.w) * k, h: A.h + (B.h - A.h) * k, id });
+      else out.push((A || B)!);
+    }
+    return out;
+  }
   if (td.kind === 'faces') {
     // para rostros: no interpolar entre conjuntos de distinto tamaño
     if (a.boxes.length !== b.boxes.length) return k < 0.5 ? a.boxes : b.boxes;

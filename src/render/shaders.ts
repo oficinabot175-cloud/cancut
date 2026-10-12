@@ -1102,3 +1102,39 @@ void main(){
     o = vec4(max(s.rgb, acc.rgb), max(s.a, acc.a));
   }
 }`;
+
+/** Máscara de forma en espacio de salida (zonas de desenfoque movibles) */
+export const FS_OUTMASK = HEAD + SHAPE_FN + `
+uniform sampler2D uTex; uniform vec2 uRes; uniform vec2 uCenter; uniform vec2 uSize;
+uniform float uRot, uFeather, uInvert, uRadius; uniform int uShape;
+void main(){
+  vec4 s = texture(uTex, vUv);
+  float m = shapeMask(vUv, uRes, uCenter, uSize, uRot, uFeather, uShape, uRadius);
+  if (uInvert > 0.5) m = 1.0 - m;
+  o = s * m;
+}`;
+
+/** Marco: esquinas redondeadas + borde interior (espacio de la fuente) */
+export const FS_FRAME = HEAD + `
+uniform sampler2D uTex; uniform vec2 uRes; uniform float uRadius, uBorder; uniform vec3 uColor; uniform vec4 uCrop;
+void main(){
+  vec4 s = texture(uTex, vUv);
+  vec2 c0 = uCrop.xy, c1 = uCrop.zw;
+  vec2 p = (vUv - (c0 + c1) * 0.5) * uRes; vec2 hs = (c1 - c0) * uRes * 0.5;
+  float r = min(uRadius, min(hs.x, hs.y));
+  vec2 q = abs(p) - hs + r;
+  float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+  float a = 1.0 - smoothstep(-1.0, 0.5, d);
+  float b = uBorder > 0.0 ? smoothstep(-uBorder - 1.0, -uBorder, d) : 0.0;
+  vec4 c = mix(s, vec4(uColor, 1.0), b);
+  o = c * a;
+}`;
+
+/** Brillo / sombra exterior bajo una capa ya transformada */
+export const FS_GLOWUNDER = HEAD + `
+uniform sampler2D uTex; uniform sampler2D uBlur; uniform vec3 uColor; uniform float uAmount;
+void main(){
+  vec4 s = texture(uTex, vUv);
+  float a = clamp(texture(uBlur, vUv).a * uAmount, 0.0, 1.0);
+  o = s + vec4(uColor * a, a) * (1.0 - s.a);
+}`;

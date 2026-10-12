@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title NovaCut Studio - Servidor local
+title CanCut - Servidor local
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -15,6 +15,6 @@ if not exist "node_modules" (
   call npm install
 )
 
-echo Abriendo NovaCut Studio en http://localhost:5173 ...
+echo Abriendo CanCut en http://localhost:5173 ...
 call npm run dev
 pause

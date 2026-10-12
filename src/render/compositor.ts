@@ -527,6 +527,15 @@ export class Compositor {
     // Desenfoque de animación
     if (L && L.geom.blur > 0.3) { const t = this.blur(cur, L.geom.blur * scaleToTex); swap(this.resizeTo(t, ew, eh)); }
 
+    // Marco de presentación (esquinas redondeadas + borde)
+    const fr = clip.frame;
+    if (fr && (fr.radius > 0 || fr.border > 0)) {
+      const t = ctx.acquire(ew, eh);
+      const cr = clip.crop;
+      ctx.run(this.P('frame', S.FS_FRAME), t, { uRes: [ew, eh], uRadius: fr.radius * scaleToTex, uBorder: fr.border * scaleToTex, uColor: hexToRgb(fr.color || '#ffffff'), uCrop: [cr.l, cr.t, 1 - cr.r, 1 - cr.b] }, { uTex: cur.tex });
+      swap(t);
+    }
+
     // Máscara de forma
     const m = clip.mask;
     if (m.shape !== 'none') {
@@ -588,6 +597,15 @@ export class Compositor {
     const M = quadMatrix(this.outW, this.outH, vr.cx * k, vr.cy * k, vr.w * k, vr.h * k, g.rotation);
     ctx.run(this.P('copy', S.FS_COPY), out, { uMatrix: M, uUvRect: vr.uv, uOpacity: 1 }, { uTex: processed.tex }, { blend: 'premult' });
     ctx.release(processed);
+    const fr = L.clip.frame;
+    if (fr && fr.glow > 0.01) {
+      // brillo o sombra exterior (marcos de plantillas de diseño)
+      const bl = this.blur(out, Math.max(2, 18 * k * (0.5 + fr.glow)));
+      const t = ctx.acquire(this.outW, this.outH);
+      ctx.run(this.P('glowunder', S.FS_GLOWUNDER), t, { uColor: hexToRgb(fr.glowColor || '#7c5cff'), uAmount: 0.6 + fr.glow * 1.4 }, { uTex: out.tex, uBlur: bl.tex });
+      ctx.release(bl); ctx.release(out);
+      return t;
+    }
     return out;
   }
 
@@ -652,7 +670,19 @@ export class Compositor {
 
     for (const L of scene.layers) {
       if (L.adjustment) {
-        const processed = this.processChain(L, this.main.tex, outW, outH, outW, outH, L.clip, scene, scene.width);
+        let processed = this.processChain(L, this.main.tex, outW, outH, outW, outH, L.clip, scene, scene.width);
+        const rg = L.clip.region;
+        if (rg) {
+          // limitar el ajuste a la zona (movible/redimensionable con el gizmo)
+          const g = L.geom;
+          const masked = ctx.acquire(outW, outH);
+          ctx.run(this.P('outmask', S.FS_OUTMASK), masked, {
+            uRes: [outW, outH], uCenter: [g.cx / scene.width, g.cy / scene.height], uSize: [Math.abs(g.fw) / scene.width, Math.abs(g.fh) / scene.height],
+            uRot: g.rotation, uFeather: rg.feather, uInvert: rg.invert ? 1 : 0, uShape: ({ rect: 1, ellipse: 2, heart: 4, star: 5 } as Record<string, number>)[rg.shape] || 1, uRadius: rg.radius,
+          }, { uTex: processed.tex });
+          ctx.release(processed);
+          processed = masked;
+        }
         this.compositeInto(processed, BLEND_ID[L.clip.blend] ?? 0, L.geom.opacity);
         ctx.release(processed);
         continue;

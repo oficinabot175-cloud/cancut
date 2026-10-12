@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useEditor, getState } from './store/editor';
 import { TopBar } from './ui/TopBar';
-import { LeftRail, LeftPanel } from './ui/LeftPanel';
+import { LeftRail, LeftPanel, TABS } from './ui/LeftPanel';
+import { useMobile } from './ui/useMobile';
+import { SlidersHorizontal } from 'lucide-react';
 import { Viewer } from './ui/Viewer';
 import { Inspector } from './ui/inspector/Inspector';
 import { Timeline } from './ui/timeline/Timeline';
@@ -20,9 +22,10 @@ import { Compositor } from './render/compositor';
 import * as Shaders from './render/shaders';
 import * as trends from './core/trends';
 import * as motion from './motion/hyperframes';
+import * as analysis from './ai/analysis';
 
 // Acceso de depuración desde la consola del navegador
-(window as any).__nc = { actions, getState, exportProject, Compositor, Shaders, trends, motion };
+(window as any).__nc = { actions, getState, exportProject, Compositor, Shaders, trends, motion, analysis };
 
 function useSplitter(cssVar: string, initial: number, min: number, max: number, axis: 'x' | 'y', invert = false) {
   const [size, setSize] = useState(() => {
@@ -95,6 +98,43 @@ export default function App() {
   }, []);
 
   const style = { '--left-w': left.size + 'px', '--right-w': right.size + 'px', '--tl-h': tl.size + 'px' } as React.CSSProperties;
+  const mobile = useMobile();
+  const leftTab = useEditor((s) => s.leftTab);
+  const [sheet, setSheet] = useState<null | 'panel' | 'inspector'>(null);
+  const selCount = useEditor((s) => s.selection.length);
+
+  if (mobile) {
+    return (
+      <div className="app mobile">
+        <TopBar />
+        <div className="m-viewer"><Viewer /></div>
+        <div className="m-timeline"><Timeline /></div>
+        <nav className="m-nav">
+          <button className={`m-nav-edit ${sheet === 'inspector' ? 'active' : ''}`} onClick={() => setSheet(sheet === 'inspector' ? null : 'inspector')}>
+            <SlidersHorizontal size={20} /><span>Editar{selCount ? ` (${selCount})` : ''}</span>
+          </button>
+          {TABS.map((t) => (
+            <button key={t.id} className={sheet === 'panel' && leftTab === t.id ? 'active' : ''} onClick={() => { if (sheet === 'panel' && leftTab === t.id) setSheet(null); else { set({ leftTab: t.id }); setSheet('panel'); } }}>
+              {t.icon}<span>{t.label}</span>
+            </button>
+          ))}
+        </nav>
+        {sheet && <div className="m-sheet-back" onPointerDown={() => setSheet(null)} />}
+        <div className={`m-sheet ${sheet ? 'open' : ''}`}>
+          <div className="m-sheet-grip" onClick={() => setSheet(null)}><button className="icon-btn m-sheet-x" title="Cerrar">✕</button></div>
+          {sheet === 'panel' && <LeftPanel />}
+          {sheet === 'inspector' && <div className="m-inspector"><Inspector /></div>}
+        </div>
+        {ready && modal === 'export' && <ExportDialog onClose={() => set({ modal: null })} />}
+        {ready && (modal === 'new' || modal === 'projects') && <WelcomeDialog onClose={() => set({ modal: null })} />}
+        {modal === 'shortcuts' && <ShortcutsDialog onClose={() => set({ modal: null })} />}
+        {modal === 'about' && <AboutDialog onClose={() => set({ modal: null })} />}
+        <Toasts />
+        <Tasks />
+        {!ready && <div className="loading-screen"><div className="row"><div className="spinner" /> Cargando CanCut…</div></div>}
+      </div>
+    );
+  }
 
   return (
     <div className="app" style={style}>
@@ -118,7 +158,7 @@ export default function App() {
       <Toasts />
       <Tasks />
       {dragging && <div className="global-drop">Suelta tus archivos para importarlos</div>}
-      {!ready && <div className="loading-screen"><div className="row"><div className="spinner" /> Cargando NovaCut Studio…</div></div>}
+      {!ready && <div className="loading-screen"><div className="row"><div className="spinner" /> Cargando CanCut…</div></div>}
     </div>
   );
 }

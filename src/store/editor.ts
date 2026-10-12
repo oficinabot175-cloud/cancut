@@ -6,7 +6,7 @@ import { clamp, deepClone, uid } from '../core/utils';
 
 setAutoFreeze(false);
 
-export type LeftTab = 'media' | 'trends' | 'motion' | 'audio' | 'text' | 'elements' | 'effects' | 'transitions' | 'filters' | 'captions' | 'ai';
+export type LeftTab = 'media' | 'trends' | 'layouts' | 'motion' | 'audio' | 'text' | 'elements' | 'effects' | 'transitions' | 'filters' | 'captions' | 'ai';
 export type InspectorTab = string;
 
 export interface Toast { id: string; text: string; kind: 'info' | 'success' | 'error' | 'progress'; progress?: number }

@@ -1,5 +1,5 @@
 // Visión por computadora en el navegador con MediaPipe Tasks (segmentación, rostros, objetos).
-import type { ImageSegmenter, FaceDetector, ObjectDetector } from '@mediapipe/tasks-vision';
+import type { ImageSegmenter, FaceDetector, ObjectDetector, PoseLandmarker } from '@mediapipe/tasks-vision';
 
 // Carga diferida del paquete MediaPipe (reduce el tamaño inicial de la app)
 const mp = () => import('@mediapipe/tasks-vision');
@@ -21,6 +21,7 @@ const MODELS = {
   deeplab: 'https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite',
   face: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
   object: 'https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/float16/latest/efficientdet_lite0.tflite',
+  pose: 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/latest/pose_landmarker_lite.task',
 };
 
 export type SegModel = 'selfie' | 'multiclass' | 'deeplab';
@@ -126,7 +127,8 @@ export function loadFaceDetector(): Promise<FaceDetector> {
     faceDet = await withDelegate((delegate) => FaceDetector.createFromOptions(fs, {
       baseOptions: { modelAssetPath: MODELS.face, delegate },
       runningMode: 'IMAGE',
-      minDetectionConfidence: 0.45,
+      minDetectionConfidence: 0.3,
+      minSuppressionThreshold: 0.3,
     }));
     return faceDet;
   })().catch((e) => { faceP = null; throw e; }));
@@ -169,4 +171,77 @@ export async function detectObjects(source: TexImageSource, sw: number, sh: numb
       return { x: (b.originX + b.width / 2) / c.width, y: (b.originY + b.height / 2) / c.height, w: b.width / c.width, h: b.height / c.height, score: d.categories?.[0]?.score, label: d.categories?.[0]?.categoryName || '' };
     })
     .filter((d) => !category || d.label === category);
+}
+
+let poseDet: PoseLandmarker | null = null;
+let poseP: Promise<PoseLandmarker> | null = null;
+export function loadPoseLandmarker(): Promise<PoseLandmarker> {
+  if (poseDet) return Promise.resolve(poseDet);
+  return (poseP ??= (async () => {
+    const fs = await fileset();
+    const { PoseLandmarker } = await mp();
+    poseDet = await withDelegate((delegate) => PoseLandmarker.createFromOptions(fs, {
+      baseOptions: { modelAssetPath: MODELS.pose, delegate },
+      runningMode: 'IMAGE',
+      numPoses: 6,
+      minPoseDetectionConfidence: 0.3,
+      minPosePresenceConfidence: 0.3,
+    }));
+    return poseDet;
+  })().catch((e) => { poseP = null; throw e; }));
+}
+
+/**
+ * Cabezas a partir del esqueleto (funciona de perfil, de costado y de espaldas):
+ * usa nariz, ojos, orejas y boca; si no son visibles, estima la cabeza desde los hombros.
+ */
+export async function detectHeads(source: TexImageSource, sw: number, sh: number): Promise<TrackBox[]> {
+  const det = await loadPoseLandmarker();
+  const c = toCanvas(source, sw, sh, 640);
+  const r = det.detect(c as any);
+  const ar = c.width / c.height;
+  const out: TrackBox[] = [];
+  for (const lm of r.landmarks || []) {
+    const face = lm.slice(0, 11).filter((p) => (p.visibility ?? 1) > 0.25);
+    const ls = lm[11], rs = lm[12];
+    const shoulderW = ls && rs ? Math.hypot((ls.x - rs.x) * ar, ls.y - rs.y) : 0;
+    let cx: number, cy: number, size: number;
+    if (face.length >= 2) {
+      const xs = face.map((p) => p.x), ys = face.map((p) => p.y);
+      cx = xs.reduce((a, b) => a + b, 0) / xs.length;
+      cy = ys.reduce((a, b) => a + b, 0) / ys.length;
+      const spread = Math.max((Math.max(...xs) - Math.min(...xs)) * ar, Math.max(...ys) - Math.min(...ys));
+      size = Math.max(spread * 2.2, shoulderW * 0.62, 0.04);
+      cy -= size * 0.12; // incluir frente y pelo
+    } else if (ls && rs && (ls.visibility ?? 1) > 0.3 && (rs.visibility ?? 1) > 0.3) {
+      cx = (ls.x + rs.x) / 2;
+      size = Math.max(shoulderW * 0.65, 0.04);
+      cy = (ls.y + rs.y) / 2 - size * 0.85;
+    } else continue;
+    // tamaño en coordenadas normalizadas (ancho relativo al ancho, alto al alto)
+    out.push({ x: cx, y: cy, w: size / ar, h: size * 1.2, score: 0.6 });
+  }
+  return out;
+}
+
+/** Rostros en mosaico 2×2 (encuentra caras pequeñas en planos abiertos). */
+export async function detectFacesTiled(source: TexImageSource, sw: number, sh: number): Promise<TrackBox[]> {
+  const det = await loadFaceDetector();
+  const full = await detectFaces(source, sw, sh);
+  if (Math.max(sw, sh) < 900) return full;
+  const out = [...full];
+  const tw = sw * 0.6, th = sh * 0.6;
+  const tile = workCanvas(640, Math.round((640 * th) / tw));
+  const g = tile.getContext('2d') as CanvasRenderingContext2D;
+  for (const [ox, oy] of [[0, 0], [sw - tw, 0], [0, sh - th], [sw - tw, sh - th]]) {
+    g.drawImage(source as CanvasImageSource, ox, oy, tw, th, 0, 0, tile.width, tile.height);
+    const r = det.detect(tile as any);
+    for (const d of r.detections || []) {
+      const b = d.boundingBox!;
+      const x = (ox + ((b.originX + b.width / 2) / tile.width) * tw) / sw;
+      const y = (oy + ((b.originY + b.height / 2) / tile.height) * th) / sh;
+      out.push({ x, y, w: ((b.width / tile.width) * tw) / sw, h: ((b.height / tile.height) * th) / sh, score: d.categories?.[0]?.score });
+    }
+  }
+  return out;
 }

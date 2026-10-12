@@ -11,7 +11,7 @@ import { defaultParams, EFFECT_MAP } from './presets';
 import { createClip } from './defaults';
 import { convertToMp4, convertAudioToWav } from '../engine/ffmpeg';
 import { engine } from '../engine/preview';
-import { trackObject, trackFaces, autoReframe, analyzeStabilization, detectScenes, detectSpeechSegments } from '../ai/analysis';
+import { trackObject, trackFaces, trackHeads, autoReframe, analyzeStabilization, detectScenes, detectSpeechSegments } from '../ai/analysis';
 import { loadSegmenter, SegModel } from '../ai/vision';
 import { insertCaptions, captionsToCues } from '../ai/transcribe';
 
@@ -196,17 +196,17 @@ export function removeBackground(mode: 'remove' | 'blur' | 'color' | 'gray' = 'r
   loadSegmenterForUI('selfie');
 }
 
-export async function blurFaces() {
+export async function blurFaces(opts: { heads?: boolean; pad?: number; mode?: 'blur' | 'pixelate' | 'solid'; strength?: number } = {}) {
   const clip = requireVideo();
   if (!clip) return;
-  const td = await runTask('Detectando rostros', (p, s) => trackFaces(clip, p, s));
+  const td = await runTask('Detectando rostros y cabezas', (p, s) => trackHeads(clip, p, s, { heads: opts.heads !== false, pad: opts.pad ?? 1, fps: 10 }));
   if (!td) return;
   const faces = td.samples.reduce((m, x) => Math.max(m, x.boxes.length), 0);
   if (!faces) { st().toast('No se detectaron rostros en el clip', 'info'); return; }
   st().commit((p) => {
     p.trackings.push(td);
     const c = p.clips.find((x) => x.id === clip.id);
-    c?.effects.push({ id: uid('fx'), type: 'regionBlur', enabled: true, params: { ...defaultParams('regionBlur'), tracking: td.id, expand: 1.5, strength: 40, shape: 'ellipse' } });
+    c?.effects.push({ id: uid('fx'), type: 'regionBlur', enabled: true, params: { ...defaultParams('regionBlur'), mode: opts.mode || 'blur', tracking: td.id, expand: 1.3, strength: opts.strength ?? 45, shape: 'ellipse', feather: 0.2 } });
   });
   st().set({ inspectorTab: 'effects' });
   st().toast(`Rostros difuminados (hasta ${faces} por fotograma)`, 'success');

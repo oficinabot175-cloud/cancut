@@ -54,7 +54,7 @@ export function WelcomeDialog({ onClose }: { onClose: () => void }) {
     onClose();
   };
   return (
-    <Modal title="NovaCut Studio" onClose={onClose} size="lg" icon={<Clapperboard size={20} color="var(--accent)" />}>
+    <Modal title="CanCut" onClose={onClose} size="lg" icon={<Clapperboard size={20} color="var(--accent)" />}>
       <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 24 }}>
         <div>
           <div className="section-title">Nuevo proyecto</div>
@@ -77,7 +77,7 @@ export function WelcomeDialog({ onClose }: { onClose: () => void }) {
           </div>
           <div className="row" style={{ marginTop: 16, gap: 8 }}>
             <button className="btn" onClick={() => { demoProject(1920, 1080); onClose(); }}><Sparkles size={14} />Abrir proyecto de ejemplo</button>
-            <button className="btn" onClick={async () => { const [f] = await pickFiles('.novacut,.json,.zip', false); if (f) { await importPackage(f); onClose(); } }}><FolderOpen size={14} />Abrir paquete .novacut</button>
+            <button className="btn" onClick={async () => { const [f] = await pickFiles('.cancut,.novacut,.json,.zip', false); if (f) { await importPackage(f); onClose(); } }}><FolderOpen size={14} />Abrir proyecto (.cancut)</button>
           </div>
         </div>
         <div>

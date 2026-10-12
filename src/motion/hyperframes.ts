@@ -16,6 +16,8 @@ export interface HFItem {
   variables: HFVariable[];
   /** composición importada por el usuario */
   custom?: { html: string; files?: Record<string, string> };
+  /** primitiva (componente) de HyperFrames: su composición de demostración */
+  component?: boolean;
 }
 export interface HFCatalog { source: string; license: string; items: HFItem[] }
 
@@ -92,15 +94,96 @@ function applyTexts(doc: Document, texts: Record<number, string>) {
 // ---------------------------------------------------------------------------
 //  Construcción del documento para el iframe
 // ---------------------------------------------------------------------------
-const LOCAL_NPM = /https:\/\/cdn\.jsdelivr\.net\/npm\/((?:three@0\.147\.0|d3@7|topojson-client@3\.1\.0|lottie-web@5\.12\.2|clipper-lib@6\.4\.2)\/[^"'\s)]+)/g;
+const LOCAL_NPM = /https:\/\/cdn\.jsdelivr\.net\/npm\/((?:three@0\.147\.0|d3@7|topojson-client@3\.1\.0|lottie-web@5\.12\.2|clipper-lib@6\.4\.2|world-atlas@2|us-atlas@3|es-atlas@0\.6\.0)\/[^"'\s)`]+)/g;
 const GSAP_CDN = /https:\/\/cdn\.jsdelivr\.net\/npm\/gsap@[\d.]+\/dist\/(gsap|CustomEase)\.min\.js/g;
 
-export interface BuildOpts { item: HFItem; variables?: Record<string, any>; texts?: Record<number, string> }
+export interface BuildOpts {
+  item: HFItem; variables?: Record<string, any>; texts?: Record<number, string>;
+  /** reemplazo de colores (#hex → #hex) en estilos y scripts */
+  colors?: Record<string, string>;
+  /** reemplazo de imágenes (src original → dataURL) */
+  images?: Record<string, string>;
+  /** textos dentro de los scripts (literal original → nuevo) */
+  scriptTexts?: Record<string, string>;
+  /** quitar el fondo de la plantilla (overlay transparente) */
+  transparentBg?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+//  Personalización genérica: colores, imágenes y textos de scripts
+// ---------------------------------------------------------------------------
+const norm6 = (h: string) => {
+  h = h.toLowerCase();
+  if (h.length === 4) h = '#' + h[1] + h[1] + h[2] + h[2] + h[3] + h[3];
+  return h.slice(0, 7);
+};
+const HEX_RE = /#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})(?![0-9a-zA-Z_-])/g;
+
+/** Colores más usados en estilos y scripts (para editarlos aunque la plantilla no tenga variables). */
+export function extractColors(html: string, max = 12): { color: string; count: number }[] {
+  const zones = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map((m) => m[1]).join('\n')
+    + [...html.matchAll(/style="([^"]*)"/gi)].map((m) => m[1]).join('\n')
+    + [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]).join('\n')
+    + [...html.matchAll(/(?:fill|stroke|stop-color|color)="(#[0-9a-fA-F]{3,6})"/gi)].map((m) => m[1]).join('\n');
+  const count = new Map<string, number>();
+  for (const m of zones.matchAll(HEX_RE)) { const c = norm6(m[0]); count.set(c, (count.get(c) || 0) + 1); }
+  return [...count.entries()].map(([color, n]) => ({ color, count: n })).sort((a, b) => b.count - a.count).slice(0, max);
+}
+
+/** Imágenes locales de la plantilla (para reemplazarlas por las tuyas). */
+export function extractImages(html: string): string[] {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const srcs = Array.from(doc.querySelectorAll('img[src], image[href]')).map((el) => el.getAttribute('src') || el.getAttribute('href') || '').filter((x) => x && !x.startsWith('data:') && !/^https?:/.test(x));
+  return [...new Set(srcs)].slice(0, 30);
+}
+
+/** Textos «humanos» dentro de los scripts (títulos, palabras, mensajes) que no son HTML estático. */
+export function extractScriptTexts(html: string): string[] {
+  const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]).join('\n');
+  const out = new Set<string>();
+  for (const m of scripts.matchAll(/(["'`])((?:(?!\1)[^\\\n$<>{}]){3,80})\1/g)) {
+    const t = m[2];
+    if (!/[A-Za-zÁÉÍÓÚáéíóúÑñ]{2,}/.test(t)) continue;
+    if (/^[a-z][\w-]*$/.test(t)) continue;               // identificadores, clases, eventos
+    if (/^[.#\[@]|use strict|sans-serif|serif'|['"`]|could not|not find|not found|failed|missing|error|warning|undefined|null/i.test(t)) continue; // código / mensajes internos
+    if (/[#:\/=;]|\w\.\w|px\b|^\s|\s$|^[A-Z_]+$|\(|\)/.test(t)) continue; // selectores, rutas, CSS, código
+    if (!/\s/.test(t) && !/^[A-ZÁÉÍÓÚ][a-záéíóúñ]+$/.test(t)) continue; // una palabra: solo si es Capitalizada
+    if (/^(?:Inter|Arial|Helvetica|Roboto|sans-serif|serif|monospace|power\d|expo|back|elastic|sine|circ|none|auto|normal|bold|center|left|right|top|bottom)$/i.test(t)) continue;
+    out.add(t);
+  }
+  return [...out].slice(0, 30);
+}
+
+function applyGeneric(html: string, o: BuildOpts): string {
+  if (o.colors) {
+    const map = new Map(Object.entries(o.colors).filter(([a, b]) => a && b && norm6(a) !== norm6(b)).map(([a, b]) => [norm6(a), b]));
+    if (map.size) html = html.replace(HEX_RE, (m) => map.get(norm6(m)) || m);
+  }
+  if (o.scriptTexts) {
+    for (const [from, to] of Object.entries(o.scriptTexts)) {
+      if (!from || from === to) continue;
+      const esc = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const safe = to.replace(/\\/g, '\\\\');
+      html = html.replace(new RegExp(`(["'\`])${esc}\\1`, 'g'), (_m, q) => q + safe.split(q).join('\\' + q) + q);
+    }
+  }
+  return html;
+}
 
 export function buildDocument(html: string, o: BuildOpts): string {
   const app = appBase();
-  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const doc = new DOMParser().parseFromString(applyGeneric(html, o), 'text/html');
   if (o.texts && Object.keys(o.texts).length) applyTexts(doc, o.texts);
+  if (o.images) for (const el of Array.from(doc.querySelectorAll('img[src], image[href]'))) {
+    const attr = el.hasAttribute('src') ? 'src' : 'href';
+    const v = el.getAttribute(attr)!;
+    if (o.images[v]) el.setAttribute(attr, o.images[v]);
+  }
+  if (o.transparentBg) {
+    const st = doc.createElement('style');
+    st.textContent = 'html,body,[data-composition-id],.hf-ui-demo-canvas,.hf-ui-demo-stage,.stage,.scene,.canvas,.frame{background:transparent!important;background-color:transparent!important;background-image:none!important}';
+    (doc.head || doc.documentElement).appendChild(st);
+  }
   // archivos de una composición importada en .zip → URLs blob
   const files = o.item.custom?.files;
   if (files) {
@@ -205,6 +288,10 @@ export async function openComposition(html: string, o: BuildOpts, host?: HTMLEle
 // ---------------------------------------------------------------------------
 export interface RenderOpts extends BuildOpts {
   fps: number;
+  /** velocidad de la animación (0.25–4) */
+  speed?: number;
+  /** segundos extra manteniendo el último fotograma */
+  hold?: number;
   /** alto (o lado corto) de salida en px */
   outShort: number;
   transparent: 'auto' | 'yes' | 'no';
@@ -232,7 +319,9 @@ export async function renderComposition(html: string, o: RenderOpts): Promise<Re
     const short = Math.min(s.width, s.height);
     const scale = Math.max(0.25, Math.min(4, o.outShort / short));
     const W = Math.round((s.width * scale) / 2) * 2, H = Math.round((s.height * scale) / 2) * 2;
-    const frames = Math.max(1, Math.round(s.duration * o.fps));
+    const speed = Math.max(0.1, o.speed || 1);
+    const animFrames = Math.max(1, Math.round((s.duration / speed) * o.fps));
+    const frames = animFrames + Math.max(0, Math.round((o.hold || 0) * o.fps));
     // primer fotograma (a mitad) para decidir transparencia
     await s.seek(s.duration * 0.5);
     const probe = await s.capture(Math.min(scale, 0.25));
@@ -259,10 +348,12 @@ export async function renderComposition(html: string, o: RenderOpts): Promise<Re
     const tStart = performance.now();
     // la codificación del fotograma anterior se solapa con la rasterización del siguiente
     let pending: Promise<void> | null = null;
+    let lastFrame: HTMLCanvasElement | null = null;
     for (let i = 0; i < frames; i++) {
       if (o.signal?.aborted) { await pending?.catch(() => {}); await output.cancel().catch(() => {}); throw new Error('Render cancelado'); }
-      await s.seek(i / o.fps);
-      const fr = await s.capture(scale);
+      if (i < animFrames || i === animFrames) await s.seek(Math.min(s.duration - 1e-3, (Math.min(i, animFrames - 1) / o.fps) * speed));
+      const fr: HTMLCanvasElement = i <= animFrames ? await s.capture(scale) : lastFrame!;
+      lastFrame = fr;
       if (pending) await pending;
       g.clearRect(0, 0, W, H);
       if (!alpha) { g.fillStyle = o.background || '#000000'; g.fillRect(0, 0, W, H); }

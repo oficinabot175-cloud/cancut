@@ -117,12 +117,12 @@ export function startAutosave() {
   window.addEventListener('beforeunload', () => { saveProjectNow().catch(() => null); });
 }
 
-// ------------------------------------------------------------------ Paquete .novacut (zip)
+// ------------------------------------------------------------------ Paquete .cancut (zip; también abre .novacut)
 export async function exportPackage(): Promise<Blob> {
   const st = getState();
   const files: Record<string, Uint8Array> = {};
   const assets = Object.values(st.assets).map(({ url, ...rest }) => rest);
-  files['project.json'] = strToU8(JSON.stringify({ app: 'NovaCut Studio', version: 1, project: st.project, assets }, null, 0));
+  files['project.json'] = strToU8(JSON.stringify({ app: 'CanCut', version: 1, project: st.project, assets }, null, 0));
   for (const a of assets) {
     const b = blobs.get(a.id);
     if (b) files[`media/${a.id}`] = new Uint8Array(await b.arrayBuffer());

@@ -42,6 +42,8 @@ export function TopBar() {
   const h = useEditor((s) => s.project.height);
   const st = getState;
   const [saved, setSaved] = useState(true);
+  const [installable, setInstallable] = useState(!!(window as any).__installPrompt);
+  useEffect(() => { const on = () => setInstallable(true); window.addEventListener('cancut-installable', on); return () => window.removeEventListener('cancut-installable', on); }, []);
   useEffect(() => {
     let t: any;
     return useEditor.subscribe((s, p) => {
@@ -54,10 +56,10 @@ export function TopBar() {
     { label: 'Proyectos recientes…', onClick: () => st().set({ modal: 'projects' }) },
     'sep',
     { label: 'Importar medios…', kbd: 'Ctrl+I', onClick: async () => importFiles(await pickFiles(ACCEPT_MEDIA)) },
-    { label: 'Abrir paquete .novacut…', onClick: async () => { const [f] = await pickFiles('.novacut,.json,.zip', false); if (f) await importPackage(f); } },
+    { label: 'Abrir proyecto (.cancut / .novacut)…', onClick: async () => { const [f] = await pickFiles('.cancut,.novacut,.json,.zip', false); if (f) await importPackage(f); } },
     'sep',
     { label: 'Guardar ahora', kbd: 'Ctrl+S', onClick: async () => { await saveProjectNow(); st().toast('Proyecto guardado en este navegador', 'success'); } },
-    { label: 'Guardar paquete (.novacut) con medios', onClick: async () => { const b = await exportPackage(); download(b, safeFileName(st().project.name) + '.novacut'); } },
+    { label: 'Guardar proyecto (.cancut) con medios', onClick: async () => { const b = await exportPackage(); download(b, safeFileName(st().project.name) + '.cancut'); } },
     'sep',
     { label: 'Exportar video…', kbd: 'Ctrl+E', onClick: () => st().set({ modal: 'export' }) },
     { label: 'Exportar fotograma (PNG)', kbd: 'Ctrl+Shift+S', onClick: () => snapshotPNG() },
@@ -89,13 +91,13 @@ export function TopBar() {
   ];
   const help: Item[] = [
     { label: 'Atajos de teclado', kbd: '?', onClick: () => st().set({ modal: 'shortcuts' }) },
-    { label: 'Acerca de NovaCut Studio', onClick: () => st().set({ modal: 'about' }) },
+    { label: 'Acerca de CanCut', onClick: () => st().set({ modal: 'about' }) },
   ];
   const aspect = ASPECT_PRESETS.find((a) => a.w === w && a.h === h)?.id || 'custom';
 
   return (
     <div className="topbar">
-      <div className="brand"><div className="logo">N</div>NovaCut<small>Studio</small></div>
+      <div className="brand"><img className="logo-img" src="./favicon.svg" alt="" />CanCut<small>Studio</small></div>
       <div className="menu">
         <Menu label="Archivo" items={file} />
         <Menu label="Editar" items={edit} />
@@ -117,6 +119,7 @@ export function TopBar() {
         {ASPECT_PRESETS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
         {aspect === 'custom' && <option value="custom">{w}×{h} (personalizado)</option>}
       </select>
+      {installable && <button className="btn sm install-btn" title="Instalar CanCut como aplicación" onClick={async () => { const p = (window as any).__installPrompt; if (!p) return; p.prompt(); await p.userChoice.catch(() => null); (window as any).__installPrompt = null; setInstallable(false); }}>Instalar app</button>}
       <button className="icon-btn" title="Atajos de teclado" onClick={() => st().set({ modal: 'shortcuts' })}><Keyboard size={16} /></button>
       <button className="btn primary" onClick={() => st().set({ modal: 'export' })}><Download size={15} />Exportar</button>
     </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Clapperboard, Search, Upload, Play, Pause, Film, Type as TypeIcon, SlidersHorizontal, Info } from 'lucide-react';
+import { Clapperboard, Search, Upload, Play, Pause, Film, Type as TypeIcon, SlidersHorizontal, Info, Palette, Image as ImageIcon, Timer, RotateCcw } from 'lucide-react';
 import { getState } from '../../store/editor';
-import { HFItem, HFSession, HFVariable, loadCatalog, loadItemHtml, extractTexts, extractVariables, openComposition, renderComposition, itemFromFile, appBase } from '../../motion/hyperframes';
+import { HFItem, HFSession, HFVariable, loadCatalog, loadItemHtml, extractTexts, extractVariables, extractColors, extractImages, extractScriptTexts, openComposition, renderComposition, itemFromFile, appBase } from '../../motion/hyperframes';
 import { Modal, ProgressBar, Select, Toggle, ColorField } from '../components/controls';
 import { importFiles } from '../../core/actions';
 import { createClip } from '../../core/defaults';
@@ -68,6 +68,12 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
   const [html, setHtml] = useState<string | null>(null);
   const [vars, setVars] = useState<Record<string, any>>({});
   const [texts, setTexts] = useState<Record<number, string>>({});
+  const [colors, setColors] = useState<Record<string, string>>({});
+  const [images, setImages] = useState<Record<string, string>>({});
+  const [scriptTexts, setScriptTexts] = useState<Record<string, string>>({});
+  const [transparentBg, setTransparentBg] = useState<boolean>(!!item.component);
+  const [speed, setSpeed] = useState(1);
+  const [hold, setHold] = useState(0);
   const [time, setTime] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -105,7 +111,7 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
     const t = setTimeout(async () => {
       setLoading(true); setErr('');
       try {
-        const s = await openComposition(html, { item, variables: vars, texts }, host.current!);
+        const s = await openComposition(html, { item, variables: vars, texts, colors, images, scriptTexts, transparentBg }, host.current!);
         if (!alive) { s.dispose(); return; }
         session.current?.dispose();
         session.current = s;
@@ -116,7 +122,14 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
       finally { if (alive) setLoading(false); }
     }, 350);
     return () => { alive = false; clearTimeout(t); };
-  }, [html, vars, texts]);
+  }, [html, vars, texts, colors, images, scriptTexts, transparentBg]);
+  const palette = useMemo(() => (html ? extractColors(html) : []), [html]);
+  const imageList = useMemo(() => (html ? extractImages(html) : []), [html]);
+  const scriptTextList = useMemo(() => {
+    if (!html) return [];
+    const shown = new Set([...textList.map((t) => t.text), ...varList.map((v) => String(v.default ?? ''))]);
+    return extractScriptTexts(html).filter((t) => !shown.has(t));
+  }, [html, textList, varList]);
 
   useEffect(() => () => { session.current?.dispose(); abort.current?.abort(); }, []);
 
@@ -136,7 +149,7 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
     const loop = (now: number) => {
       const s = session.current;
       if (s) {
-        let t = timeRef.current + (now - last) / 1000;
+        let t = timeRef.current + ((now - last) / 1000) * speed;
         if (t >= s.duration) t = 0;
         timeRef.current = t; setTime(t); s.seek(t);
       }
@@ -145,7 +158,7 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [playing]);
+  }, [playing, speed]);
 
   const dur = session.current?.duration || item.duration;
 
@@ -158,7 +171,7 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
     setRendering(true); setProgress(0); setErr('');
     document.body.classList.add('nc-busy');
     try {
-      const r = await renderComposition(html, { item, variables: vars, texts, fps, outShort: quality, transparent, signal: abort.current.signal, onProgress: (p, i) => { setProgress(p); setInfo(i); } });
+      const r = await renderComposition(html, { item, variables: vars, texts, colors, images, scriptTexts, transparentBg, speed, hold, fps, outShort: quality, transparent, signal: abort.current.signal, onProgress: (p, i) => { setProgress(p); setInfo(i); } });
       const file = new File([r.blob], r.filename, { type: r.blob.type });
       const [asset] = await importFiles([file]);
       if (!asset) throw new Error('No se pudo importar el video renderizado');
@@ -232,6 +245,53 @@ export function MotionDialog({ item, onClose }: { item: HFItem; onClose: () => v
               ))}
             </div>
           </div>}
+          {scriptTextList.length > 0 && <div className="section">
+            <div className="section-title"><TypeIcon size={12} />Más textos (animados)</div>
+            {scriptTextList.map((t) => (
+              <div key={t} style={{ marginBottom: 6 }}>
+                <input className="text-input" style={{ width: '100%' }} value={scriptTexts[t] ?? t} onChange={(e) => setScriptTexts({ ...scriptTexts, [t]: e.target.value })} />
+              </div>
+            ))}
+          </div>}
+          {palette.length > 0 && <div className="section">
+            <div className="section-title"><Palette size={12} />Colores de la plantilla
+              {Object.keys(colors).length > 0 && <button className="icon-btn sm" style={{ marginLeft: 'auto' }} title="Restablecer colores" onClick={() => setColors({})}><RotateCcw size={12} /></button>}
+            </div>
+            <div className="motion-palette">
+              {palette.map(({ color }) => (
+                <label key={color} className="motion-swatch" title={`${color} → ${colors[color] || color}`}>
+                  <input type="color" value={colors[color] || color} onChange={(e) => setColors({ ...colors, [color]: e.target.value })} />
+                  <span style={{ background: colors[color] || color }} />
+                </label>
+              ))}
+            </div>
+            <p className="hint" style={{ marginTop: 4 }}>Cambia cualquier color de la plantilla (fondos, textos, acentos), aunque no tenga opciones propias.</p>
+          </div>}
+          {imageList.length > 0 && <div className="section">
+            <div className="section-title"><ImageIcon size={12} />Imágenes</div>
+            <div className="motion-images">
+              {imageList.map((src) => (
+                <button key={src} className="motion-img" title="Reemplazar por tu imagen" onClick={async () => {
+                  const [f] = await pickFiles('image/*', false);
+                  if (!f) return;
+                  const r = new FileReader(); r.onload = () => setImages((m) => ({ ...m, [src]: String(r.result) })); r.readAsDataURL(f);
+                }}>
+                  <img src={images[src] || (item.custom ? src : appBase() + 'hyperframes/' + item.file.replace(/[^/]*$/, '') + src)} alt="" />
+                </button>
+              ))}
+            </div>
+          </div>}
+          <div className="section">
+            <div className="section-title"><Timer size={12} />Tiempo y fondo</div>
+            <div className="kv">
+              <label>Velocidad</label>
+              <Select value={speed} onChange={setSpeed} options={[0.5, 0.75, 1, 1.25, 1.5, 2].map((v) => ({ value: v, label: `${v}× · ${(dur / v).toFixed(1)} s` }))} />
+              <label>Mantener final</label>
+              <Select value={hold} onChange={setHold} options={[0, 1, 2, 3, 5, 10].map((v) => ({ value: v, label: v ? `+${v} s` : 'No' }))} />
+              <label>Quitar fondo</label>
+              <Toggle value={transparentBg} onChange={setTransparentBg} />
+            </div>
+          </div>
           <div className="section">
             <div className="section-title"><Film size={12} />Render</div>
             <div className="kv">

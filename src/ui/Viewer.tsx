@@ -118,7 +118,7 @@ export function Viewer() {
 
   const ctx = useMemo(() => geomCtx(project, assets), [project, assets]);
   const selClip = selection.length === 1 ? project.clips.find((c) => c.id === selection[0]) : undefined;
-  const selVisible = selClip && selClip.type !== 'audio' && selClip.type !== 'adjustment' && time >= selClip.start && time < selClip.start + selClip.duration;
+  const selVisible = selClip && selClip.type !== 'audio' && (selClip.type !== 'adjustment' || !!selClip.region) && time >= selClip.start && time < selClip.start + selClip.duration;
   const geom = selVisible ? clipGeometry(selClip!, time, ctx) : null;
 
   const toScreen = (x: number, y: number) => ({ x: ox + x * k, y: oy + y * k });
@@ -128,7 +128,7 @@ export function Viewer() {
     const vis = project.tracks.filter((t) => t.kind === 'visual' && !t.hidden && !t.locked);
     for (const tr of vis) {
       const c = activeClipAt(project, tr.id, time);
-      if (!c || c.type === 'adjustment') continue;
+      if (!c || (c.type === 'adjustment' && !c.region)) continue;
       const g = clipGeometry(c, time, ctx);
       const vr = visibleRect(g);
       const r = (-g.rotation * Math.PI) / 180;
