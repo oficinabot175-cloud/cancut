@@ -1,0 +1,9 @@
+node_modules
+dist
+.DS_Store
+*.log
+.vite
+Thumbs.db
+public/vendor
+_to_delete/
+*.tgz
