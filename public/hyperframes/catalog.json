@@ -1,0 +1,2091 @@
+{
+ "source": "https://github.com/heygen-com/hyperframes",
+ "license": "Apache-2.0",
+ "generated": "2026-10-10",
+ "items": [
+  {
+   "id": "yt-logo-intro",
+   "title": "Intro con logo",
+   "category": "Intros y títulos",
+   "titleEn": "Logo Intro Sequence",
+   "description": "Logo stamp pops on a lined board, a kicker line gives way to the title with an accent arrow chip; seeded line distortion",
+   "tags": [
+    "logo",
+    "intro",
+    "creator"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/yt-logo-intro/yt-logo-intro.html",
+   "poster": "blocks/yt-logo-intro/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "yt-prism-title",
+   "title": "Título prisma",
+   "category": "Intros y títulos",
+   "titleEn": "Chromatic Fringe Title",
+   "description": "Display title on a transparent root: blur-focus entrance, red/blue fringe that settles then breathes, perspective bow, slow scale drift",
+   "tags": [
+    "typography",
+    "title-card",
+    "creator"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/yt-prism-title/yt-prism-title.html",
+   "poster": "blocks/yt-prism-title/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "weight-wave",
+   "title": "Onda tipográfica",
+   "category": "Intros y títulos",
+   "titleEn": "Weight Wave",
+   "description": "A crest of thickness travels along a headline: each character swells from light to black and leans forward as the wave passes, driven by the wght and slnt variable-font axes rather than by transforms.",
+   "tags": [
+    "typography",
+    "kinetic-type",
+    "title",
+    "variable-font",
+    "text"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/weight-wave/weight-wave.html",
+   "poster": "blocks/weight-wave/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "text",
+     "type": "string",
+     "label": "Headline",
+     "default": "PRESSURE MOVES THROUGH TYPE",
+     "maxLength": 64
+    },
+    {
+     "id": "color",
+     "type": "color",
+     "label": "Text color",
+     "default": "#f5f5f7"
+    },
+    {
+     "id": "background",
+     "type": "color",
+     "label": "Background",
+     "default": "#0b0b0d"
+    },
+    {
+     "id": "weightFrom",
+     "type": "number",
+     "label": "Weight (rest)",
+     "default": 400,
+     "min": 300,
+     "max": 1000,
+     "step": 10
+    },
+    {
+     "id": "weightTo",
+     "type": "number",
+     "label": "Weight (crest)",
+     "default": 1000,
+     "min": 300,
+     "max": 1000,
+     "step": 10
+    },
+    {
+     "id": "crestWidth",
+     "type": "number",
+     "label": "Crest width",
+     "default": 4,
+     "min": 1,
+     "max": 24,
+     "step": 0.5,
+     "unit": "chars"
+    },
+    {
+     "id": "sweepSpeed",
+     "type": "number",
+     "label": "Sweep speed",
+     "default": 0.5,
+     "min": 0.05,
+     "max": 3,
+     "step": 0.05,
+     "unit": "passes/s"
+    },
+    {
+     "id": "slant",
+     "type": "number",
+     "label": "Slant at crest",
+     "default": -12,
+     "min": -15,
+     "max": 0,
+     "step": 0.5,
+     "unit": "deg"
+    },
+    {
+     "id": "direction",
+     "type": "enum",
+     "label": "Direction",
+     "default": "ltr",
+     "options": [
+      {
+       "value": "ltr",
+       "label": "Left to right"
+      },
+      {
+       "value": "rtl",
+       "label": "Right to left"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "split-flap-board",
+   "title": "Panel de aeropuerto",
+   "category": "Intros y títulos",
+   "titleEn": "Split-Flap Board",
+   "description": "Solari-style departure board: every cell walks its drum forward through the intervening characters of a fixed alphabet until it lands on its target, so the text resolves as a mechanical cascade instead of a fade.",
+   "tags": [
+    "text",
+    "kinetic",
+    "mechanical",
+    "split-flap",
+    "solari",
+    "departure-board",
+    "reveal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 3.5,
+   "file": "blocks/split-flap-board/split-flap-board.html",
+   "poster": "blocks/split-flap-board/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "boardText",
+     "type": "string",
+     "label": "Board text",
+     "default": "NOW BOARDING",
+     "maxLength": 24
+    },
+    {
+     "id": "flapAlphabet",
+     "type": "string",
+     "label": "Flap alphabet (drum order)",
+     "default": " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,'",
+     "maxLength": 64
+    },
+    {
+     "id": "flipDuration",
+     "type": "number",
+     "label": "Seconds per flap",
+     "default": 0.09,
+     "min": 0.03,
+     "max": 1.2,
+     "step": 0.01,
+     "unit": "s"
+    },
+    {
+     "id": "cellStagger",
+     "type": "number",
+     "label": "Per-cell start stagger",
+     "default": 0.05,
+     "min": 0,
+     "max": 0.5,
+     "step": 0.01,
+     "unit": "s"
+    },
+    {
+     "id": "cellCount",
+     "type": "number",
+     "label": "Cells on the board",
+     "default": 12,
+     "min": 1,
+     "max": 24,
+     "step": 1
+    }
+   ]
+  },
+  {
+   "id": "hw-title",
+   "title": "Título manuscrito",
+   "category": "Intros y títulos",
+   "titleEn": "Handwritten Title",
+   "description": "Handwritten display text with a scalar-driven word-by-word highlight sweep and a seeded squiggle underline sized to the text; boils",
+   "tags": [
+    "handwritten",
+    "typography",
+    "title-card",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/hw-title/hw-title.html",
+   "poster": "blocks/hw-title/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "hw-write-title",
+   "title": "Título que se escribe",
+   "category": "Intros y títulos",
+   "titleEn": "Handwritten Write-On Title",
+   "description": "True glyph write-on: filled Caveat letterforms revealed by baked per-glyph centerline strokes traced in real stroke order with a curvature-adaptive pen-velocity ease (fast on straights, slow into curves, inter-stroke pen lifts); optional squiggle underline; boils",
+   "tags": [
+    "handwritten",
+    "typography",
+    "title-card",
+    "write-on",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/hw-write-title/hw-write-title.html",
+   "poster": "blocks/hw-write-title/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "hw-path-text",
+   "title": "Texto en trayectoria",
+   "category": "Intros y títulos",
+   "titleEn": "Text Along a Path",
+   "description": "Handwriting flowing along any SVG path with a per-character reveal; the path is the only geometry input",
+   "tags": [
+    "handwritten",
+    "typography",
+    "path",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/hw-path-text/hw-path-text.html",
+   "poster": "blocks/hw-path-text/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "mk-callout-highlight",
+   "title": "Frase resaltada",
+   "category": "Intros y títulos",
+   "titleEn": "Word-Sweep Highlight",
+   "description": "A sentence whose word-by-word emphasis is driven by a single scalar — tween it to sync the highlight with a voiceover",
+   "tags": [
+    "typography",
+    "karaoke",
+    "captions",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/mk-callout-highlight/mk-callout-highlight.html",
+   "poster": "blocks/mk-callout-highlight/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-neon-border",
+   "title": "Rótulo borde neón",
+   "category": "Rótulos",
+   "titleEn": "Neon Border",
+   "description": "Two arcs of light travel the edge of a rounded panel and snap corner to corner, trailing a soft three-layer bloom. A lower third for a name and role.",
+   "tags": [
+    "lower-third",
+    "glow",
+    "loop",
+    "video-primitive"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-neon-border/lt-neon-border.html",
+   "poster": "blocks/lt-neon-border/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "name",
+     "type": "string",
+     "label": "Name",
+     "default": "Dr. Maya Chen"
+    },
+    {
+     "id": "role",
+     "type": "string",
+     "label": "Role",
+     "default": "Host · Neuroscientist"
+    },
+    {
+     "id": "accent",
+     "type": "color",
+     "label": "Accent",
+     "default": "#cc9149"
+    },
+    {
+     "id": "movement",
+     "type": "enum",
+     "label": "Movement",
+     "default": "step",
+     "options": [
+      {
+       "value": "step",
+       "label": "Step (snap at corners)"
+      },
+      {
+       "value": "glide",
+       "label": "Glide (smooth)"
+      }
+     ]
+    },
+    {
+     "id": "speed",
+     "type": "number",
+     "label": "Speed",
+     "default": 1.6,
+     "min": 0.2,
+     "max": 6,
+     "step": 0.1,
+     "unit": "corners/s"
+    },
+    {
+     "id": "cornerRadius",
+     "type": "number",
+     "label": "Corner radius",
+     "default": 26,
+     "min": 0,
+     "max": 90,
+     "step": 1,
+     "unit": "px"
+    },
+    {
+     "id": "thickness",
+     "type": "number",
+     "label": "Thickness",
+     "default": 5,
+     "min": 1,
+     "max": 16,
+     "step": 1,
+     "unit": "px"
+    },
+    {
+     "id": "arcLength",
+     "type": "number",
+     "label": "Arc length",
+     "default": 22,
+     "min": 5,
+     "max": 100,
+     "step": 1,
+     "unit": "%"
+    },
+    {
+     "id": "glow",
+     "type": "number",
+     "label": "Glow",
+     "default": 1,
+     "min": 0,
+     "max": 2,
+     "step": 0.05,
+     "unit": "x"
+    }
+   ]
+  },
+  {
+   "id": "lt-accent-underline",
+   "title": "Rótulo subrayado",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Accent Underline",
+   "description": "Cardless lower third for footage overlay: name rises, an accent rule draws left-to-right, role fades in; text-shadowed for legibility",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-accent-underline/lt-accent-underline.html",
+   "poster": "blocks/lt-accent-underline/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-bold-block",
+   "title": "Rótulo bloque",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Bold Block",
+   "description": "High-energy podcast lower third: solid dark block wipes in, uppercase name slams up, accent tag pops",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "bold"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-bold-block/lt-bold-block.html",
+   "poster": "blocks/lt-bold-block/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-clean-bar",
+   "title": "Rótulo barra limpia",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Clean Bar",
+   "description": "Minimal white-card lower third for podcasts/interviews: accent tab, name + role, clip-wipe entrance",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-clean-bar/lt-clean-bar.html",
+   "poster": "blocks/lt-clean-bar/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-color-block",
+   "title": "Rótulo color",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Color Block",
+   "description": "High-energy lower third: bold accent-color block slides in with overshoot, condensed name + mono role",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "bold"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-color-block/lt-color-block.html",
+   "poster": "blocks/lt-color-block/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-dark-card",
+   "title": "Rótulo tarjeta oscura",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Dark Card",
+   "description": "Charcoal card lower third for bright footage: name, drawn accent underline, role; slide-up entrance",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "dark"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-dark-card/lt-dark-card.html",
+   "poster": "blocks/lt-dark-card/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-kicker-name",
+   "title": "Rótulo con etiqueta",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Kicker Name",
+   "description": "Cardless lower third with an accent eyebrow/kicker tag, heavy name, and a drawn baseline; for footage",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "bold"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-kicker-name/lt-kicker-name.html",
+   "poster": "blocks/lt-kicker-name/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-mask-reveal",
+   "title": "Rótulo con máscara",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Mask Reveal",
+   "description": "Cardless lower third: an accent sweep crosses and clip-path-reveals a heavy name, role fades up; for footage",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "bold"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-mask-reveal/lt-mask-reveal.html",
+   "poster": "blocks/lt-mask-reveal/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-side-rule",
+   "title": "Rótulo línea lateral",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Side Rule",
+   "description": "Cardless lower third with a vertical accent bar; condensed display name + mono role, text-shadowed for footage",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-side-rule/lt-side-rule.html",
+   "poster": "blocks/lt-side-rule/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-soft-pill",
+   "title": "Rótulo píldora",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Soft Pill",
+   "description": "Rounded white pill lower third for podcasts/interviews: status dot, name + role, scale-pop entrance",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-soft-pill/lt-soft-pill.html",
+   "poster": "blocks/lt-soft-pill/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lt-stack-bars",
+   "title": "Rótulo barras",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — Stack Bars",
+   "description": "Two stacked bars: a dark name bar wipes from the left, an accent role bar wipes from the right",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "podcast",
+    "interview",
+    "bold"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.8,
+   "file": "blocks/lt-stack-bars/lt-stack-bars.html",
+   "poster": "blocks/lt-stack-bars/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "lower-third-bild",
+   "title": "Rótulo exclusiva",
+   "category": "Rótulos",
+   "titleEn": "Lower Third — BILD Style",
+   "description": "News-style lower third with tight-fit text boxes: white headline bar with red drop-shadow, red sub-line with white drop-shadow.",
+   "tags": [
+    "broadcast",
+    "lower-third",
+    "news",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/lower-third-bild/lower-third-bild.html",
+   "poster": "blocks/lower-third-bild/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "TXT_MAIN_1_Line",
+     "type": "string",
+     "default": "BILD EXKLUSIV"
+    },
+    {
+     "id": "TXT_SUB",
+     "type": "string",
+     "default": "Sonderbericht"
+    }
+   ]
+  },
+  {
+   "id": "yt-lower-third",
+   "title": "Rótulo creador",
+   "category": "Rótulos",
+   "titleEn": "YouTube Lower Third",
+   "description": "Animated YouTube subscribe lower third with avatar and channel info",
+   "tags": [
+    "social",
+    "overlay",
+    "youtube"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.5,
+   "file": "blocks/yt-lower-third/yt-lower-third.html",
+   "poster": "blocks/yt-lower-third/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/yt-lower-third.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/yt-lower-third.mp4",
+   "variables": []
+  },
+  {
+   "id": "news-ticker",
+   "title": "Noticias de última hora",
+   "category": "Rótulos",
+   "titleEn": "News Ticker",
+   "description": "Premium broadcast-style lower-third ticker with live label, headline ribbon, and scrolling news crawl.",
+   "tags": [
+    "lower-third",
+    "overlay",
+    "news",
+    "ticker"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 7,
+   "file": "blocks/news-ticker/news-ticker.html",
+   "poster": "blocks/news-ticker/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "tiktok-follow",
+   "title": "Botón seguir (vertical)",
+   "category": "Redes sociales",
+   "titleEn": "TikTok Follow",
+   "description": "Animated TikTok follow overlay with profile card and follow button",
+   "tags": [
+    "social",
+    "overlay",
+    "tiktok"
+   ],
+   "width": 1080,
+   "height": 1920,
+   "duration": 4.5,
+   "file": "blocks/tiktok-follow/tiktok-follow.html",
+   "poster": "blocks/tiktok-follow/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/tiktok-follow.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/tiktok-follow.mp4",
+   "variables": []
+  },
+  {
+   "id": "instagram-follow",
+   "title": "Seguir perfil (vertical)",
+   "category": "Redes sociales",
+   "titleEn": "Instagram Follow",
+   "description": "Animated Instagram follow overlay with profile card and follow button",
+   "tags": [
+    "social",
+    "overlay",
+    "instagram"
+   ],
+   "width": 1080,
+   "height": 1920,
+   "duration": 4.5,
+   "file": "blocks/instagram-follow/instagram-follow.html",
+   "poster": "blocks/instagram-follow/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/instagram-follow.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/instagram-follow.mp4",
+   "variables": []
+  },
+  {
+   "id": "x-post",
+   "title": "Publicación social",
+   "category": "Redes sociales",
+   "titleEn": "X Post Card",
+   "description": "Animated X/Twitter post card overlay with engagement metrics",
+   "tags": [
+    "social",
+    "overlay",
+    "twitter"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 5,
+   "file": "blocks/x-post/x-post.html",
+   "poster": "blocks/x-post/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/x-post.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/x-post.mp4",
+   "variables": []
+  },
+  {
+   "id": "reddit-post",
+   "title": "Publicación de foro",
+   "category": "Redes sociales",
+   "titleEn": "Reddit Post Card",
+   "description": "Animated Reddit post card overlay with upvotes and comments",
+   "tags": [
+    "social",
+    "overlay",
+    "reddit"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 5,
+   "file": "blocks/reddit-post/reddit-post.html",
+   "poster": "blocks/reddit-post/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/reddit-post.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/reddit-post.mp4",
+   "variables": []
+  },
+  {
+   "id": "yt-comment-card",
+   "title": "Comentarios",
+   "category": "Redes sociales",
+   "titleEn": "Comment Cards",
+   "description": "Social comments typing on over footage: avatar pop, username and time, per-character typewriter, likes row; image avatars or initials chips",
+   "tags": [
+    "social",
+    "comments",
+    "creator",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/yt-comment-card/yt-comment-card.html",
+   "poster": "blocks/yt-comment-card/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "macos-notification",
+   "title": "Notificación",
+   "category": "Redes sociales",
+   "titleEn": "macOS Notification",
+   "description": "Animated macOS-style notification banner with app icon and message",
+   "tags": [
+    "social",
+    "overlay",
+    "notification"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 5,
+   "file": "blocks/macos-notification/macos-notification.html",
+   "poster": "blocks/macos-notification/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/macos-notification.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/macos-notification.mp4",
+   "variables": []
+  },
+  {
+   "id": "thread-message-stack",
+   "title": "Conversación",
+   "category": "Redes sociales",
+   "titleEn": "Thread Message Stack",
+   "description": "A source-owned editable conversation stack with arbitrary incoming and outgoing messages",
+   "tags": [
+    "social",
+    "conversation",
+    "messages"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/thread-message-stack/thread-message-stack.html",
+   "poster": "blocks/thread-message-stack/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "camcorder-hud",
+   "title": "Videocámara REC",
+   "category": "Overlays y efectos",
+   "titleEn": "Camcorder HUD",
+   "description": "Responsive REC, battery, editable date placeholder, and timeline-driven counter overlay for creator-camera and camcorder treatments",
+   "tags": [
+    "camcorder",
+    "camera",
+    "recording",
+    "hud",
+    "overlay",
+    "creator",
+    "media-treatment-overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4,
+   "file": "blocks/camcorder-hud/camcorder-hud.html",
+   "poster": "blocks/camcorder-hud/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/camcorder-hud.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/camcorder-hud.mp4",
+   "variables": []
+  },
+  {
+   "id": "editorial-flash-overlay",
+   "title": "Flash editorial",
+   "category": "Overlays y efectos",
+   "titleEn": "Editorial Flash Overlay",
+   "description": "Finite neutral-warm light layers for a seek-safe camera-flash cut or social reveal",
+   "tags": [
+    "flash",
+    "editorial",
+    "social",
+    "light",
+    "transition",
+    "overlay",
+    "media-treatment-overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4,
+   "file": "blocks/editorial-flash-overlay/editorial-flash-overlay.html",
+   "poster": "blocks/editorial-flash-overlay/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/editorial-flash-overlay.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/editorial-flash-overlay.mp4",
+   "variables": []
+  },
+  {
+   "id": "organic-light-leak-overlay",
+   "title": "Fuga de luz orgánica",
+   "category": "Overlays y efectos",
+   "titleEn": "Organic Light Leak Overlay",
+   "description": "Finite CSS light-leak overlay for memory beats and motivated transitions",
+   "tags": [
+    "light-leak",
+    "film",
+    "memory",
+    "transition",
+    "overlay",
+    "media-treatment-overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4,
+   "file": "blocks/organic-light-leak-overlay/organic-light-leak-overlay.html",
+   "poster": "blocks/organic-light-leak-overlay/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/organic-light-leak-overlay.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/organic-light-leak-overlay.mp4",
+   "variables": []
+  },
+  {
+   "id": "freeze-frame-dressing",
+   "title": "Recorte scrapbook",
+   "category": "Overlays y efectos",
+   "titleEn": "Freeze-Frame Dressing",
+   "description": "Timeline-driven paper, tape, and flash dressing for a freeze-frame or background-removed subject",
+   "tags": [
+    "freeze-frame",
+    "cutout",
+    "scrapbook",
+    "paper",
+    "social",
+    "overlay",
+    "media-treatment-overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4,
+   "file": "blocks/freeze-frame-dressing/freeze-frame-dressing.html",
+   "poster": "blocks/freeze-frame-dressing/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/freeze-frame-dressing.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/freeze-frame-dressing.mp4",
+   "variables": []
+  },
+  {
+   "id": "hw-frame",
+   "title": "Marco manuscrito",
+   "category": "Overlays y efectos",
+   "titleEn": "Sketched Frame",
+   "description": "Media in a hand-drawn border with corner doodles and a handwritten caption; the unit tilts slightly and boils (images inside the block; keep live footage in the host)",
+   "tags": [
+    "handwritten",
+    "frame",
+    "media"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/hw-frame/hw-frame.html",
+   "poster": "blocks/hw-frame/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "hw-text-cloud",
+   "title": "Bocadillo manuscrito",
+   "category": "Overlays y efectos",
+   "titleEn": "Speech Bubble",
+   "description": "Hand-drawn speech bubble with a positionable tail: outline draws on, paper fill fades in, handwritten text types per character; boils",
+   "tags": [
+    "handwritten",
+    "speech-bubble",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/hw-text-cloud/hw-text-cloud.html",
+   "poster": "blocks/hw-text-cloud/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "hw-pipeline",
+   "title": "Diagrama a mano",
+   "category": "Overlays y efectos",
+   "titleEn": "Hand-Drawn Flowchart",
+   "description": "Wobbled boxes with handwritten labels joined by curved connectors, drawing on in sequence from a node list",
+   "tags": [
+    "handwritten",
+    "diagram",
+    "data-viz",
+    "overlay"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 7,
+   "file": "blocks/hw-pipeline/hw-pipeline.html",
+   "poster": "blocks/hw-pipeline/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "snow",
+   "title": "Nieve",
+   "category": "Overlays y efectos",
+   "titleEn": "Snow",
+   "description": "Seek-safe falling-snow overlay: sparse or dense flakes drift down with size, speed and opacity correlated per flake for depth, radial-masked so the frame center stays clear",
+   "tags": [
+    "snow",
+    "snowfall",
+    "winter",
+    "weather",
+    "overlay",
+    "ambient",
+    "particles",
+    "media-treatment-overlay",
+    "loopable"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/snow/snow.html",
+   "poster": "blocks/snow/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/snow.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/snow.mp4",
+   "variables": [
+    {
+     "id": "density",
+     "type": "enum",
+     "role": "style",
+     "label": "Density",
+     "description": "Flake count across the frame.",
+     "default": "sparse",
+     "options": [
+      {
+       "value": "sparse",
+       "label": "Sparse"
+      },
+      {
+       "value": "dense",
+       "label": "Dense"
+      }
+     ]
+    },
+    {
+     "id": "speed",
+     "type": "enum",
+     "role": "style",
+     "label": "Fall speed",
+     "description": "How fast flakes fall and sway.",
+     "default": "calm",
+     "options": [
+      {
+       "value": "calm",
+       "label": "Calm"
+      },
+      {
+       "value": "gust",
+       "label": "Gust"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "starfield",
+   "title": "Cielo estrellado",
+   "category": "Overlays y efectos",
+   "titleEn": "Starfield",
+   "description": "Seek-safe night-sky overlay: sparse or dense stars in three size tiers that twinkle and drift in two parallax layers, radial-masked to keep the frame center clear",
+   "tags": [
+    "starfield",
+    "night-sky",
+    "stars",
+    "twinkle",
+    "sky",
+    "weather",
+    "overlay",
+    "ambient",
+    "particles",
+    "media-treatment-overlay",
+    "loopable"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/starfield/starfield.html",
+   "poster": "blocks/starfield/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/starfield.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/starfield.mp4",
+   "variables": [
+    {
+     "id": "density",
+     "type": "enum",
+     "role": "style",
+     "label": "Density",
+     "description": "Star count across the frame.",
+     "default": "sparse",
+     "options": [
+      {
+       "value": "sparse",
+       "label": "Sparse"
+      },
+      {
+       "value": "dense",
+       "label": "Dense"
+      }
+     ]
+    },
+    {
+     "id": "tone",
+     "type": "enum",
+     "role": "style",
+     "label": "Tone",
+     "description": "Star color mix.",
+     "default": "warm",
+     "options": [
+      {
+       "value": "warm",
+       "label": "Warm (white + yellow)"
+      },
+      {
+       "value": "cool",
+       "label": "Cool (white + blue)"
+      },
+      {
+       "value": "white",
+       "label": "White only"
+      }
+     ]
+    },
+    {
+     "id": "speed",
+     "type": "enum",
+     "role": "style",
+     "label": "Twinkle speed",
+     "description": "How fast stars pulse.",
+     "default": "slow",
+     "options": [
+      {
+       "value": "slow",
+       "label": "Slow"
+      },
+      {
+       "value": "fast",
+       "label": "Fast"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hw-scribble-transition",
+   "title": "Garabato",
+   "category": "Transiciones",
+   "titleEn": "Scribble Transition",
+   "description": "Overlay transition: scribble bands accumulate to cover the frame with a solid backstop, the host cuts beneath, and the scribble clears",
+   "tags": [
+    "handwritten",
+    "transition",
+    "wipe"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 2.2,
+   "file": "blocks/hw-scribble-transition/hw-scribble-transition.html",
+   "poster": "blocks/hw-scribble-transition/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "mk-clone-wall-transition",
+   "title": "Muro de palabras",
+   "category": "Transiciones",
+   "titleEn": "Text Clone Wall Transition",
+   "description": "Overlay transition: a tiled word wall covers the frame, inverts via difference blending, and clears — hard-cut the content beneath while covered",
+   "tags": [
+    "transition",
+    "typography",
+    "wipe"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 2.4,
+   "file": "blocks/mk-clone-wall-transition/mk-clone-wall-transition.html",
+   "poster": "blocks/mk-clone-wall-transition/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "gooey-split",
+   "title": "División líquida",
+   "category": "Transiciones",
+   "titleEn": "Gooey Split",
+   "description": "A dot splits into a three-dot menu with a gooey metaball neck, spins into a swirl mark under directional shutter motion blur, then breaks back into three dots and merges into one. The goo is an SVG blur-and-threshold filter on the dots; the blur integrates each part along its real trajectory, so the smear follows the direction and speed of the spin.",
+   "tags": [
+    "effect",
+    "gooey",
+    "metaball",
+    "motion-blur",
+    "morph",
+    "logo",
+    "icon"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 4.7,
+   "file": "blocks/gooey-split/gooey-split.html",
+   "poster": "blocks/gooey-split/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "mk-background",
+   "title": "Degradado suave",
+   "category": "Fondos animados",
+   "titleEn": "Minimal Gradient Background",
+   "description": "Procedural soft-blob gradient backdrop in a minimalist presentation style: two radial blobs drifting over a base color, with an animatable rounded-card bar mask and optional frosted-glass mode",
+   "tags": [
+    "background",
+    "gradient",
+    "minimal",
+    "professional",
+    "presentation"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/mk-background/mk-background.html",
+   "poster": "blocks/mk-background/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "yt-lcd-background",
+   "title": "Pantalla LCD",
+   "category": "Fondos animados",
+   "titleEn": "Scanline Board Background",
+   "description": "Textured paper board: scanlines with slow drift, optional pixel grid, static grain, and display text with a blur-focus entrance and chromatic-fringe title",
+   "tags": [
+    "background",
+    "texture",
+    "creator"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/yt-lcd-background/yt-lcd-background.html",
+   "poster": "blocks/yt-lcd-background/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "halftone-field",
+   "title": "Campo de semitonos",
+   "category": "Fondos animados",
+   "titleEn": "Halftone Field",
+   "description": "A full-bleed halftone light field: a grid of dots whose size and colour track a slow flowing simplex-noise field, so broad bands of light sweep across a mostly-black frame like a giant LED wall showing a plasma. Built to run under type.",
+   "tags": [
+    "webgl",
+    "shader",
+    "background",
+    "texture",
+    "halftone"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/halftone-field/halftone-field.html",
+   "poster": "blocks/halftone-field/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "frequency",
+     "type": "number",
+     "label": "Field frequency",
+     "default": 2,
+     "min": 1,
+     "max": 10,
+     "step": 0.1
+    },
+    {
+     "id": "speed",
+     "type": "number",
+     "label": "Flow speed",
+     "default": 5,
+     "min": 0,
+     "max": 10,
+     "step": 0.1
+    },
+    {
+     "id": "cellSize",
+     "type": "number",
+     "label": "Cell size",
+     "default": 54,
+     "min": 1,
+     "max": 100,
+     "step": 1
+    },
+    {
+     "id": "gamma",
+     "type": "number",
+     "label": "Gamma (midtone crush)",
+     "default": 12,
+     "min": 1,
+     "max": 20,
+     "step": 0.1
+    },
+    {
+     "id": "paletteBias",
+     "type": "number",
+     "label": "Palette bias",
+     "default": 2,
+     "min": 0,
+     "max": 20,
+     "step": 0.5
+    },
+    {
+     "id": "palette1",
+     "type": "color",
+     "label": "Palette stop 1 (lows)",
+     "default": "#00AAFF"
+    },
+    {
+     "id": "palette2",
+     "type": "color",
+     "label": "Palette stop 2",
+     "default": "#C2FF67"
+    },
+    {
+     "id": "palette3",
+     "type": "color",
+     "label": "Palette stop 3",
+     "default": "#6600FF"
+    },
+    {
+     "id": "palette4",
+     "type": "color",
+     "label": "Palette stop 4 (crests)",
+     "default": "#000000"
+    },
+    {
+     "id": "background",
+     "type": "color",
+     "label": "Background",
+     "default": "#000000"
+    },
+    {
+     "id": "quantize",
+     "type": "boolean",
+     "label": "Quantise to 30fps (stepped)",
+     "default": false
+    }
+   ]
+  },
+  {
+   "id": "cosmic-orb",
+   "title": "Orbe cósmico",
+   "category": "Fondos animados",
+   "titleEn": "Cosmic Orb",
+   "description": "An iridescent soap-bubble planet: a slowly spinning sphere of nebula bands, dust lanes and twinkling stars wrapped in a refracting glass limb with chromatic aberration at the edge.",
+   "tags": [
+    "webgl",
+    "shader",
+    "background",
+    "showcase",
+    "3d"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/cosmic-orb/cosmic-orb.html",
+   "poster": "blocks/cosmic-orb/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "hue",
+     "type": "number",
+     "label": "Nebula hue",
+     "default": 268,
+     "min": 0,
+     "max": 360,
+     "step": 1,
+     "unit": "deg"
+    },
+    {
+     "id": "accent",
+     "type": "number",
+     "label": "Accent hue",
+     "default": 196,
+     "min": 0,
+     "max": 360,
+     "step": 1,
+     "unit": "deg"
+    },
+    {
+     "id": "spin",
+     "type": "number",
+     "label": "Spin rate",
+     "default": 0.035,
+     "min": 0,
+     "max": 0.5,
+     "step": 0.005,
+     "unit": "turns/s"
+    },
+    {
+     "id": "stars",
+     "type": "number",
+     "label": "Star density",
+     "default": 1,
+     "min": 0,
+     "max": 2,
+     "step": 0.05
+    },
+    {
+     "id": "glow",
+     "type": "number",
+     "label": "Glow intensity",
+     "default": 1,
+     "min": 0,
+     "max": 2,
+     "step": 0.05
+    },
+    {
+     "id": "size",
+     "type": "number",
+     "label": "Orb size",
+     "default": 0.86,
+     "min": 0.2,
+     "max": 1.2,
+     "step": 0.01
+    },
+    {
+     "id": "pulse",
+     "type": "number",
+     "label": "Beat pulse",
+     "default": 0,
+     "min": 0,
+     "max": 1,
+     "step": 0.01
+    },
+    {
+     "id": "pulseEnvelope",
+     "type": "string",
+     "label": "Beat pulse envelope (comma-separated 0-1 samples)",
+     "default": "",
+     "placeholder": "0,0.2,1,0.4,0"
+    },
+    {
+     "id": "backdrop",
+     "type": "color",
+     "label": "Backdrop",
+     "default": "#04040a"
+    }
+   ]
+  },
+  {
+   "id": "spiral-galaxy",
+   "title": "Galaxia espiral",
+   "category": "Fondos animados",
+   "titleEn": "Spiral Galaxy",
+   "description": "A spiral galaxy seen from outside, turning with real differential rotation: inner stars orbit faster than outer ones, so the arms wind up over the shot instead of spinning rigidly. 20,000 additive GPU sprites, seeded once and solved directly from time, so any frame can be rendered on its own.",
+   "tags": [
+    "hero",
+    "space",
+    "particles",
+    "webgl",
+    "background"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/spiral-galaxy/spiral-galaxy.html",
+   "poster": "blocks/spiral-galaxy/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "stars",
+     "type": "number",
+     "label": "Star count",
+     "default": 20000,
+     "min": 2000,
+     "max": 40000,
+     "step": 1000
+    },
+    {
+     "id": "arms",
+     "type": "number",
+     "label": "Arm count",
+     "default": 3,
+     "min": 2,
+     "max": 8,
+     "step": 1
+    },
+    {
+     "id": "rate",
+     "type": "number",
+     "label": "Rotation rate",
+     "default": 0.25,
+     "min": 0,
+     "max": 1.5,
+     "step": 0.05,
+     "unit": "rad/s"
+    },
+    {
+     "id": "glow",
+     "type": "number",
+     "label": "Core brightness",
+     "default": 1.9,
+     "min": 0.2,
+     "max": 4,
+     "step": 0.1
+    },
+    {
+     "id": "size",
+     "type": "number",
+     "label": "Star size",
+     "default": 10,
+     "min": 2,
+     "max": 40,
+     "step": 1,
+     "unit": "px"
+    },
+    {
+     "id": "core",
+     "type": "color",
+     "label": "Core colour",
+     "default": "#ffa575"
+    },
+    {
+     "id": "rim",
+     "type": "color",
+     "label": "Rim colour",
+     "default": "#311599"
+    }
+   ]
+  },
+  {
+   "id": "vfx-anamorphic-flare",
+   "title": "Destellos anamórficos",
+   "category": "Fondos animados",
+   "titleEn": "Anamorphic Streak Flare",
+   "description": "A drifting field of bright points, each one throwing the long horizontal blue-violet streak a real anamorphic cinema lens produces. Built from the measured filter constants: a 0.3 high-pass, 80 horizontal taps at quarter resolution, a samples/3 gain and a 0x7a8aff tint.",
+   "tags": [
+    "vfx",
+    "background",
+    "showcase",
+    "optical",
+    "canvas"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 10,
+   "file": "blocks/vfx-anamorphic-flare/vfx-anamorphic-flare.html",
+   "poster": "blocks/vfx-anamorphic-flare/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "intensity",
+     "type": "number",
+     "label": "Streak intensity",
+     "default": 5,
+     "min": 0,
+     "max": 20,
+     "step": 0.1
+    },
+    {
+     "id": "threshold",
+     "type": "number",
+     "label": "High-pass threshold",
+     "default": 0.3,
+     "min": 0,
+     "max": 1,
+     "step": 0.01
+    },
+    {
+     "id": "streakLength",
+     "type": "number",
+     "label": "Streak length gain",
+     "default": 1,
+     "min": 0.1,
+     "max": 6,
+     "step": 0.05
+    },
+    {
+     "id": "tint",
+     "type": "color",
+     "label": "Streak tint",
+     "default": "#7a8aff"
+    },
+    {
+     "id": "bloomRadius",
+     "type": "number",
+     "label": "Bloom radius",
+     "default": 0,
+     "min": 0,
+     "max": 80,
+     "step": 1,
+     "unit": "px"
+    },
+    {
+     "id": "timeScale",
+     "type": "number",
+     "label": "Drift rate",
+     "default": 0.5,
+     "min": 0,
+     "max": 3,
+     "step": 0.05
+    },
+    {
+     "id": "emitters",
+     "type": "number",
+     "label": "Emitter count",
+     "default": 140,
+     "min": 1,
+     "max": 400,
+     "step": 1
+    },
+    {
+     "id": "backdrop",
+     "type": "color",
+     "label": "Backdrop",
+     "default": "#04040a"
+    }
+   ]
+  },
+  {
+   "id": "rack-focus",
+   "title": "Bokeh con cambio de foco",
+   "category": "Fondos animados",
+   "titleEn": "Rack Focus",
+   "description": "A focus pull with real aperture bokeh: the focal plane travels from a near subject to a far one, so one resolves as the other blows into hard-edged polygon discs that clip to a cat's eye toward the corners. A focus pull only reads against content at two clearly separated depths, so this block carries its own depth-layered night exterior and puts both subject depths on variables.",
+   "tags": [
+    "webgl",
+    "shader",
+    "camera",
+    "depth",
+    "cinematic",
+    "showcase"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/rack-focus/rack-focus.html",
+   "poster": "blocks/rack-focus/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "nearfocus",
+     "type": "number",
+     "label": "Near focal distance",
+     "default": 1.2,
+     "min": 0.2,
+     "max": 100,
+     "step": 0.05,
+     "unit": "m"
+    },
+    {
+     "id": "farfocus",
+     "type": "number",
+     "label": "Far focal distance",
+     "default": 80,
+     "min": 0.3,
+     "max": 400,
+     "step": 0.5,
+     "unit": "m"
+    },
+    {
+     "id": "focallength",
+     "type": "number",
+     "label": "Focal length",
+     "default": 85,
+     "min": 12,
+     "max": 300,
+     "step": 1,
+     "unit": "mm"
+    },
+    {
+     "id": "aperture",
+     "type": "number",
+     "label": "Aperture (f-number)",
+     "default": 1.8,
+     "min": 0.95,
+     "max": 22,
+     "step": 0.05
+    },
+    {
+     "id": "blades",
+     "type": "number",
+     "label": "Aperture blades (bokeh shape)",
+     "default": 6,
+     "min": 3,
+     "max": 14,
+     "step": 1
+    },
+    {
+     "id": "catseye",
+     "type": "number",
+     "label": "Cat eye clipping at the corners",
+     "default": 0.62,
+     "min": 0,
+     "max": 1,
+     "step": 0.02
+    },
+    {
+     "id": "pullstart",
+     "type": "number",
+     "label": "Pull start",
+     "default": 1.2,
+     "min": 0,
+     "max": 30,
+     "step": 0.05,
+     "unit": "s"
+    },
+    {
+     "id": "pullduration",
+     "type": "number",
+     "label": "Pull duration",
+     "default": 3.2,
+     "min": 0.1,
+     "max": 30,
+     "step": 0.05,
+     "unit": "s"
+    },
+    {
+     "id": "pullease",
+     "type": "string",
+     "label": "Pull easing (GSAP ease)",
+     "default": "power2.inOut",
+     "placeholder": "power2.inOut"
+    },
+    {
+     "id": "bokeh",
+     "type": "number",
+     "label": "Bokeh exposure",
+     "default": 1,
+     "min": 0,
+     "max": 3,
+     "step": 0.05
+    },
+    {
+     "id": "backdrop",
+     "type": "color",
+     "label": "Backdrop",
+     "default": "#05060a"
+    }
+   ]
+  },
+  {
+   "id": "oscilloscope-trace",
+   "title": "Osciloscopio",
+   "category": "Fondos animados",
+   "titleEn": "Oscilloscope Trace",
+   "description": "CRT oscilloscope beam sweeping a waveform across a 10x8 graticule, with closed-form phosphor persistence: the tail decays as exp(-age/tau) and brightens where the beam slows",
+   "tags": [
+    "instrument",
+    "data",
+    "showcase",
+    "retro"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 6,
+   "file": "blocks/oscilloscope-trace/oscilloscope-trace.html",
+   "poster": "blocks/oscilloscope-trace/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/oscilloscope-trace.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/oscilloscope-trace.mp4",
+   "variables": [
+    {
+     "id": "waveform",
+     "type": "enum",
+     "label": "Waveform",
+     "default": "sine",
+     "options": [
+      {
+       "value": "sine",
+       "label": "Sine"
+      },
+      {
+       "value": "square",
+       "label": "Square"
+      },
+      {
+       "value": "triangle",
+       "label": "Triangle"
+      },
+      {
+       "value": "data",
+       "label": "Data series"
+      }
+     ]
+    },
+    {
+     "id": "frequency",
+     "type": "number",
+     "label": "Signal frequency",
+     "unit": "Hz",
+     "default": 12,
+     "min": 0.1,
+     "max": 200,
+     "step": 0.1
+    },
+    {
+     "id": "amplitude",
+     "type": "number",
+     "label": "Amplitude",
+     "unit": "div",
+     "default": 3,
+     "min": 0.1,
+     "max": 4,
+     "step": 0.1
+    },
+    {
+     "id": "persistenceMs",
+     "type": "number",
+     "label": "Phosphor persistence (tau)",
+     "unit": "ms",
+     "default": 100,
+     "min": 1,
+     "max": 1000,
+     "step": 1
+    },
+    {
+     "id": "phosphorColor",
+     "type": "color",
+     "label": "Phosphor colour",
+     "default": "#5dff8f"
+    },
+    {
+     "id": "sweepRate",
+     "type": "number",
+     "label": "Sweep rate",
+     "unit": "sweeps/s",
+     "default": 5,
+     "min": 0.25,
+     "max": 60,
+     "step": 0.25
+    },
+    {
+     "id": "dataSeries",
+     "type": "string",
+     "label": "Data series (waveform=data)",
+     "default": "",
+     "placeholder": "0,0.4,0.9,0.3,-0.6,-1,-0.2,0.5"
+    }
+   ]
+  },
+  {
+   "id": "bar-chart-race",
+   "title": "Carrera de barras",
+   "category": "Datos y gráficos",
+   "titleEn": "Bar Chart Race",
+   "description": "Ranked bars grow and overtake each other as a time series advances, with the axis rescaling as values climb and the accent handing over to whoever leads",
+   "tags": [
+    "data",
+    "chart",
+    "statistics",
+    "ranking"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 12,
+   "file": "blocks/bar-chart-race/bar-chart-race.html",
+   "poster": "blocks/bar-chart-race/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "title",
+     "type": "string",
+     "label": "Title",
+     "default": "Streaming Subscribers by Service"
+    },
+    {
+     "id": "subtitle",
+     "type": "string",
+     "label": "Subtitle",
+     "default": "Ranked by reported subscribers"
+    },
+    {
+     "id": "periods",
+     "type": "string",
+     "label": "Period labels (comma separated)",
+     "default": "2019, 2020, 2021, 2022, 2023, 2024"
+    },
+    {
+     "id": "series",
+     "type": "string",
+     "label": "Series (one per line: Name: v1, v2, ...)",
+     "default": "Northwind: 42, 58, 71, 96, 118, 131\nCobalt: 30, 46, 68, 92, 126, 168\nFerry: 55, 62, 66, 70, 74, 79\nMarlow: 18, 33, 52, 61, 88, 104\nAster: 25, 28, 44, 58, 63, 72\nPell: 12, 20, 39, 47, 55, 90\nQuill: 8, 11, 15, 24, 40, 66\nDunmore: 35, 37, 38, 40, 42, 44"
+    },
+    {
+     "id": "barCount",
+     "type": "number",
+     "label": "Bars shown",
+     "default": 6,
+     "min": 3,
+     "max": 12,
+     "step": 1
+    },
+    {
+     "id": "periodDuration",
+     "type": "number",
+     "label": "Seconds per period",
+     "default": 2,
+     "min": 0.4,
+     "max": 6,
+     "step": 0.1
+    },
+    {
+     "id": "valuePrefix",
+     "type": "string",
+     "label": "Value prefix",
+     "default": "$"
+    },
+    {
+     "id": "valueSuffix",
+     "type": "string",
+     "label": "Value suffix",
+     "default": "M"
+    },
+    {
+     "id": "valueDecimals",
+     "type": "number",
+     "label": "Value decimals",
+     "default": 0,
+     "min": 0,
+     "max": 3,
+     "step": 1
+    },
+    {
+     "id": "accent",
+     "type": "color",
+     "label": "Leader accent",
+     "default": "#c8452d"
+    }
+   ]
+  },
+  {
+   "id": "data-chart",
+   "title": "Gráfico de columnas",
+   "category": "Datos y gráficos",
+   "titleEn": "Data Chart",
+   "description": "Animated bar + line chart with staggered reveal, NYT-style typography, and value labels",
+   "tags": [
+    "data",
+    "chart",
+    "statistics"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 15,
+   "file": "blocks/data-chart/data-chart.html",
+   "poster": "blocks/data-chart/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/data-chart.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/data-chart.mp4",
+   "variables": []
+  },
+  {
+   "id": "mk-line-graph",
+   "title": "Gráfico de líneas",
+   "category": "Datos y gráficos",
+   "titleEn": "Minimal Line Graph",
+   "description": "One or two SVG series draw on with dots popping and value labels riding the draw front; dim baseline axis, x-labels, color-dot legend",
+   "tags": [
+    "data-viz",
+    "chart",
+    "graph",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 7,
+   "file": "blocks/mk-line-graph/mk-line-graph.html",
+   "poster": "blocks/mk-line-graph/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "mk-progress-stat",
+   "title": "Estadística",
+   "category": "Datos y gráficos",
+   "titleEn": "Count-Up Stat Card",
+   "description": "Big-numeral statistic with count-up, label, thin progress track filling to value/max, and caption; light and dark schemes",
+   "tags": [
+    "data-viz",
+    "stat",
+    "minimal"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 7,
+   "file": "blocks/mk-progress-stat/mk-progress-stat.html",
+   "poster": "blocks/mk-progress-stat/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "mk-specs-list",
+   "title": "Lista de especificaciones",
+   "category": "Datos y gráficos",
+   "titleEn": "Specs Checklist",
+   "description": "Left-aligned specs/traits checklist over footage or a board: rows slide in staggered with an accent underline sweep; light and dark schemes",
+   "tags": [
+    "data-viz",
+    "list",
+    "minimal",
+    "professional"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 8,
+   "file": "blocks/mk-specs-list/mk-specs-list.html",
+   "poster": "blocks/mk-specs-list/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": []
+  },
+  {
+   "id": "flowchart",
+   "title": "Diagrama de flujo",
+   "category": "Datos y gráficos",
+   "titleEn": "Flowchart",
+   "description": "Animated decision tree with SVG connectors, sticky-note nodes, cursor interaction, and typing correction",
+   "tags": [
+    "diagram",
+    "flowchart",
+    "interactive"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 12,
+   "file": "blocks/flowchart/flowchart.html",
+   "poster": "blocks/flowchart/poster.webp",
+   "posterRemote": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/flowchart.png",
+   "previewVideo": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/blocks/flowchart.mp4",
+   "variables": []
+  },
+  {
+   "id": "lottie-character-walk",
+   "title": "Personaje caminando",
+   "category": "Personajes",
+   "titleEn": "Lottie Character Walk",
+   "description": "A jointed flat character walks in on planted feet, stops and points at a card; the body acting is a Lottie file and the stage is GSAP.",
+   "tags": [
+    "character",
+    "character-animation",
+    "mascot",
+    "walk-cycle",
+    "gesture",
+    "pointing",
+    "puppet",
+    "lottie",
+    "explainer"
+   ],
+   "width": 1920,
+   "height": 1080,
+   "duration": 7.5,
+   "file": "blocks/lottie-character-walk/lottie-character-walk.html",
+   "poster": "blocks/lottie-character-walk/poster.webp",
+   "posterRemote": "",
+   "previewVideo": "",
+   "variables": [
+    {
+     "id": "title",
+     "type": "string",
+     "label": "Card title",
+     "default": "Meet your guide",
+     "maxLength": 28
+    },
+    {
+     "id": "body",
+     "type": "string",
+     "label": "Card text",
+     "default": "Walks in on planted feet, then points the way.",
+     "maxLength": 90
+    }
+   ]
+  }
+ ]
+}
