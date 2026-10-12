@@ -114,7 +114,11 @@ export function ExportDialog({ onClose }: { onClose: () => void }) {
     } catch (e: any) {
       if (abort.current?.signal.aborted) { setState('idle'); return; }
       console.error(e);
-      setError(e?.message || String(e)); setState('error');
+      const msg = String(e?.message || e);
+      setError(/not supported in this environment|encoder configuration/i.test(msg)
+        ? `Tu navegador no admite esta combinación de códec en este formato (${msg.match(/\(([^)]+)\)/)?.[1] || 'configuración'}). Prueba otro códec, el formato MP4 o WebM, o desactiva «Incluir audio».`
+        : msg);
+      setState('error');
     } finally { document.body.classList.remove('nc-busy'); }
   };
 

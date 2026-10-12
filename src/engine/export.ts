@@ -1,6 +1,6 @@
 import {
   Output, BufferTarget, Mp4OutputFormat, WebMOutputFormat, MovOutputFormat, MkvOutputFormat, OggOutputFormat,
-  CanvasSource, AudioBufferSource, Quality, StreamTarget, getFirstEncodableVideoCodec, getFirstEncodableAudioCodec,
+  CanvasSource, AudioBufferSource, Quality, StreamTarget, getFirstEncodableVideoCodec, canEncodeAudio,
   Input, ALL_FORMATS, BlobSource, VideoSampleSink, VideoSample, VideoCodec, AudioCodec,
 } from 'mediabunny';
 import { GIFEncoder, quantize, applyPalette } from 'gifenc';
@@ -52,6 +52,24 @@ const AUDIO_CODECS: Record<string, AudioCodec[]> = {
 function quality(o: ExportOptions): Quality {
   if (o.quality === 'custom' && o.bitrate) return new Quality({ bitrate: Math.round(o.bitrate * 1e6) });
   return new Quality((o.quality === 'custom' ? 'high' : o.quality) as any);
+}
+
+/**
+ * Elige un códec de audio y un bitrate que el navegador pueda codificar de verdad.
+ * (El codificador AAC de Windows, por ejemplo, solo acepta 96/128/160/192 kbps: 320 kbps falla.)
+ */
+async function pickAudioEncoder(codecs: AudioCodec[], preferredKbps: number): Promise<{ codec: AudioCodec; kbps: number } | null> {
+  const rates = [...new Set([preferredKbps, 320, 256, 192, 160, 128, 96, 64].filter((r) => r <= preferredKbps))];
+  for (const codec of codecs) {
+    for (const kbps of rates) {
+      for (const sampleRate of [48000, 44100]) {
+        try {
+          if (await canEncodeAudio(codec, { numberOfChannels: 2, sampleRate, bitrate: kbps * 1000 })) return { codec, kbps };
+        } catch { /* probar el siguiente */ }
+      }
+    }
+  }
+  return null;
 }
 
 class Aborted extends Error { constructor() { super('Exportación cancelada'); } }
@@ -208,10 +226,11 @@ export async function exportProject(project: Project, assets: Record<string, Med
       const blob = await ffmpegConvert({ input: wav, inputName: 'audio.wav', outputName: 'out.' + tgt.ext, args: tgt.args, mime: tgt.mime, onProgress: (p) => progress(0.6 + p * 0.4, 'Codificando con FFmpeg…') });
       return { blob, filename: nameFor(project, tgt.ext), codec: tgt.label, seconds: (performance.now() - t0) / 1000 };
     }
-    const codec = await getFirstEncodableAudioCodec(AUDIO_CODECS[o.format], { numberOfChannels: 2, sampleRate: 48000 });
-    if (!codec) throw new Error('El navegador no puede codificar este formato de audio.');
+    const pick = await pickAudioEncoder(AUDIO_CODECS[o.format], o.audioBitrate || 256);
+    if (!pick) throw new Error('Tu navegador no puede codificar este formato de audio. Prueba WAV, MP3 u OGG.');
+    const codec = pick.codec;
     const output = new Output({ format: o.format === 'm4a' ? new Mp4OutputFormat({ fastStart: 'in-memory' }) : new OggOutputFormat(), target: new BufferTarget() });
-    const src = new AudioBufferSource({ codec, quality: new Quality({ bitrate: (o.audioBitrate || 256) * 1000 }) });
+    const src = new AudioBufferSource({ codec, quality: new Quality({ bitrate: pick.kbps * 1000 }) });
     output.addAudioTrack(src);
     await output.start();
     await src.add(buf);
@@ -293,9 +312,10 @@ export async function exportProject(project: Project, assets: Record<string, Med
       progress(0.02, 'Mezclando audio…');
       audioBuf = await mixAudio(project, assets, o.start, o.end, 48000, 2);
       if (audioBuf) {
-        const acodec = await getFirstEncodableAudioCodec(AUDIO_CODECS[container], { numberOfChannels: 2, sampleRate: 48000 });
-        if (acodec) {
-          audioSource = new AudioBufferSource({ codec: acodec, quality: new Quality({ bitrate: (o.audioBitrate || 320) * 1000 }) });
+        const pick = await pickAudioEncoder(AUDIO_CODECS[container], o.audioBitrate || 320);
+        if (!pick) console.warn('[export] ningún códec de audio disponible: se exporta sin audio');
+        if (pick) {
+          audioSource = new AudioBufferSource({ codec: pick.codec, quality: new Quality({ bitrate: pick.kbps * 1000 }) });
           output.addAudioTrack(audioSource);
         }
       }
